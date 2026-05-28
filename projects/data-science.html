@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science & Analytics Pipelines — QuantStack</title>
+    <meta name="description" content="OHLCV archiving for 10K+ symbols, Plotly Dash dashboards, correlation heatmaps, drawdown analysis and EDA pipelines for financial markets.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <div class="nav-project-label">03 · Data Science</div>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(100,180,255,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.10) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Project 03</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-blue-pill">DATA</span>
+        </div>
+        <h1 class="hero-title">Data Science &<br><span class="gradient-blue">Analytics Pipelines</span></h1>
+        <p class="hero-sub">Production-grade data engineering for financial markets: OHLCV archiving at scale, interactive Plotly dashboards, and EDA pipelines that turn raw market data into actionable insights for trading systems.</p>
+        <div class="hero-tags">
+            <span class="htag">pandas</span>
+            <span class="htag">Plotly</span>
+            <span class="htag">Dash</span>
+            <span class="htag">Polygon.io</span>
+            <span class="htag">Parquet</span>
+            <span class="htag">aiohttp</span>
+            <span class="htag">asyncio</span>
+            <span class="htag">Jupyter</span>
+        </div>
+    </div>
+</header>
+
+<main class="proj-main">
+
+    <div class="metrics-strip">
+        <div class="metric"><div class="m-val" style="color:#64b4ff;">10K+</div><div class="m-lbl">Symbols Archived</div></div>
+        <div class="metric"><div class="m-val" style="color:#64b4ff;">Interactive</div><div class="m-lbl">Plotly Dash</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">Parquet</div><div class="m-lbl">Storage Format</div></div>
+        <div class="metric"><div class="m-val" style="color:#00e676;">Daily</div><div class="m-lbl">Auto-Updates</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">Async</div><div class="m-lbl">Fetching</div></div>
+        <div class="metric"><div class="m-val" style="color:#64b4ff;">Python</div><div class="m-lbl">Language</div></div>
+    </div>
+
+    <section class="section">
+        <div class="overview-card">
+            <p>A suite of data science tools focused on financial market data. The <strong>Polygon.io OHLCV Archiver</strong> bulk-downloads historical bars for thousands of symbols into structured Parquet/CSV datasets with incremental update logic. The <strong>Crypto Analytics Dashboard</strong> (Plotly Dash) provides interactive candlestick charts, volume profiles, cross-asset correlation heatmaps, and drawdown analysis for a live portfolio view.</p>
+        </div>
+    </section>
+
+    <section class="section two-col">
+        <div class="col-box">
+            <h4>OHLCV Archiver</h4>
+            <ul>
+                <li>Bulk download for 10,000+ tickers</li>
+                <li>Async rate-limit-aware fetching</li>
+                <li>Parquet + CSV dual-format output</li>
+                <li>Incremental updates (new bars only)</li>
+                <li>Symbol universe management</li>
+                <li>Data quality validation checks</li>
+                <li>Overnight scheduled runs via cron</li>
+            </ul>
+        </div>
+        <div class="col-box">
+            <h4>Analytics Dashboard</h4>
+            <ul>
+                <li>Interactive candlestick + volume charts</li>
+                <li>VWAP & SMA/EMA overlays</li>
+                <li>Cross-asset correlation heatmap</li>
+                <li>Max drawdown & Sharpe ratio</li>
+                <li>Portfolio P&amp;L tracking</li>
+                <li>Custom date range filtering</li>
+                <li>Real-time data refresh callbacks</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">EDA & Analysis Pipelines</h2>
+        <div class="feature-list">
+            <div class="feature-item"><span class="fi-dot" style="color:#64b4ff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Return Distribution Analysis:</strong> Daily/weekly/monthly return distributions, skewness, kurtosis, and fat-tail detection across asset classes.</div></div>
+            <div class="feature-item"><span class="fi-dot" style="color:#64b4ff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Correlation Matrix Generator:</strong> Rolling 30/90/252-day cross-asset correlation heatmaps updated daily for portfolio risk monitoring.</div></div>
+            <div class="feature-item"><span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Volatility Surface Plotter:</strong> 3D volatility surface charts across strikes and expiries from options chain data.</div></div>
+            <div class="feature-item"><span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Sector Rotation Tracker:</strong> Relative strength comparison of 11 GICS sectors with momentum ranking and visual flow charts.</div></div>
+            <div class="feature-item"><span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Drawdown Analyzer:</strong> Maximum drawdown, recovery time, underwater equity curves, and Calmar ratio computation for strategy evaluation.</div></div>
+            <div class="feature-item"><span class="fi-dot" style="color:#b46aff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Earnings Impact Study:</strong> Systematic backtesting of price moves around earnings announcements across 500+ stocks.</div></div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Technologies Used</h2>
+        <div class="tech-grid">
+            <span class="tech-pill">pandas</span>
+            <span class="tech-pill">NumPy</span>
+            <span class="tech-pill">Plotly</span>
+            <span class="tech-pill">Dash</span>
+            <span class="tech-pill">Matplotlib</span>
+            <span class="tech-pill">Seaborn</span>
+            <span class="tech-pill">Polygon.io API</span>
+            <span class="tech-pill">pyarrow (Parquet)</span>
+            <span class="tech-pill">aiohttp</span>
+            <span class="tech-pill">asyncio</span>
+            <span class="tech-pill">Jupyter</span>
+            <span class="tech-pill">scipy.stats</span>
+            <span class="tech-pill">yfinance</span>
+            <span class="tech-pill">schedule</span>
+        </div>
+    </section>
+
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="ml.html" class="fnav-link">← ML Models</a>
+        <a href="rag.html" class="fnav-link">RAG Systems →</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+</script>
+</body>
+</html>

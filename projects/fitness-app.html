@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness App — Mobile Fitness & Booking System | QuantStack</title>
+    <meta name="description" content="Fitness App: Flutter mobile fitness & booking management system with services browsing, session scheduling, secure payments, and real-time notifications — iOS & Android.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+    <style>
+        .gallery-section { margin-top: 56px; }
+        .gallery-main {
+            border-radius: 14px; overflow: hidden;
+            border: 1px solid rgba(255,79,90,0.3);
+            box-shadow: 0 28px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,79,90,0.08);
+            margin-top: 20px; transition: box-shadow 0.35s;
+            background: linear-gradient(180deg, #0d1535 0%, #1a0f14 100%);
+        }
+        .gallery-main:hover { box-shadow: 0 36px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,79,90,0.25); }
+        .gallery-device-bar {
+            background: #141830; padding: 10px 16px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .device-label {
+            flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px;
+            padding: 4px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--grey);
+        }
+        .gallery-phone-stage {
+            display: flex; justify-content: center; align-items: center;
+            padding: 32px 24px 28px; min-height: 520px;
+        }
+        .gallery-main-img {
+            width: auto; max-width: min(300px, 42vw); max-height: 560px;
+            display: block; cursor: pointer; border-radius: 28px;
+            border: 3px solid rgba(255,79,90,0.35);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 40px rgba(255,79,90,0.1);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .gallery-main-img:hover { transform: scale(1.01); }
+        .gallery-caption {
+            background: rgba(5,9,26,0.85); border-top: 1px solid rgba(255,79,90,0.12);
+            padding: 12px 20px; font-size: 12px; color: var(--grey);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .gallery-caption .fig-label {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+            color: var(--red); letter-spacing: 0.1em; text-transform: uppercase;
+            background: rgba(255,79,90,0.12); border: 1px solid rgba(255,79,90,0.25);
+            border-radius: 4px; padding: 2px 8px; flex-shrink: 0;
+        }
+        .gallery-strip {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 10px; margin-top: 14px;
+        }
+        .gallery-thumb {
+            border-radius: 10px; overflow: hidden; border: 2px solid transparent;
+            cursor: pointer; transition: all 0.22s ease; position: relative;
+            background: #1a0f14; aspect-ratio: 9/16; max-height: 140px;
+        }
+        .gallery-thumb img {
+            width: 100%; height: 100%; object-fit: cover; object-position: top center;
+            opacity: 0.55; transition: opacity 0.22s;
+        }
+        .gallery-thumb:hover img { opacity: 0.85; }
+        .gallery-thumb:hover { border-color: rgba(255,79,90,0.45); }
+        .gallery-thumb.active { border-color: var(--red); }
+        .gallery-thumb.active img { opacity: 1; }
+        .thumb-label {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(5,9,26,0.95));
+            padding: 18px 4px 5px; font-size: 8px; font-weight: 700;
+            color: var(--grey); text-align: center; letter-spacing: 0.05em; text-transform: uppercase;
+        }
+        .gallery-thumb.active .thumb-label { color: var(--red); }
+        @media (max-width: 800px) {
+            .gallery-strip { grid-template-columns: repeat(2, 1fr); }
+            .gallery-phone-stage { min-height: 440px; padding: 20px; }
+        }
+        .project-links-section { margin-top: 56px; }
+        .links-grid.single-link { display: grid; grid-template-columns: 1fr; max-width: 560px; gap: 16px; margin-top: 20px; }
+        .project-link-card {
+            display: flex; align-items: center; gap: 18px; padding: 24px 28px;
+            border-radius: 14px; border: 1px solid; text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .project-link-card:hover { transform: translateY(-4px); }
+        .project-link-card.doc-card { border-color: rgba(255,79,90,0.3); background: rgba(255,79,90,0.05); }
+        .project-link-card.doc-card:hover { border-color: rgba(255,79,90,0.6); box-shadow: 0 12px 40px rgba(255,79,90,0.15); }
+        .link-card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: rgba(255,79,90,0.12); border: 1px solid rgba(255,79,90,0.2); }
+        .link-card-body { flex: 1; }
+        .link-card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; color: var(--red); }
+        .link-card-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .link-card-desc { font-size: 12px; color: var(--grey); }
+        .link-card-arrow { font-size: 20px; transition: transform 0.2s; color: var(--red); }
+        .project-link-card:hover .link-card-arrow { transform: translateX(4px); }
+        .flow-num.red-gradient { background: linear-gradient(135deg, var(--red), #ff8a80); }
+        .badge-red-pill {
+            padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            letter-spacing: 0.08em; background: rgba(255,79,90,0.14);
+            color: var(--red); border: 1px solid rgba(255,79,90,0.3);
+        }
+        .gradient-red {
+            background: linear-gradient(135deg, var(--red), #ff8a80);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <a href="flutter.html" class="nav-project-label" style="text-decoration:none;color:var(--grey);">Mobile · Project 04</a>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(255,79,90,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(245,166,35,0.10) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Project 04</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-red-pill">FLUTTER · FITNESS</span>
+        </div>
+        <h1 class="hero-title">Fitness App<br><span class="gradient-red">Booking System</span></h1>
+        <p class="hero-sub">A comprehensive mobile fitness and booking management system built with Flutter — users browse fitness services, schedule sessions with trainers, manage profiles, and receive real-time notifications for appointments and updates. Clean, modern UI designed for both beginners and fitness enthusiasts.</p>
+        <div class="hero-tags">
+            <span class="htag">Flutter</span>
+            <span class="htag">Dart</span>
+            <span class="htag">Firebase</span>
+            <span class="htag">REST APIs</span>
+            <span class="htag">Booking System</span>
+            <span class="htag">Payments</span>
+        </div>
+    </div>
+</header>
+
+<main class="proj-main">
+
+    <div class="metrics-strip">
+        <div class="metric"><div class="m-val" style="color:#ff4f5a;">4</div><div class="m-lbl">Core Screens</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">4</div><div class="m-lbl">Service Categories</div></div>
+        <div class="metric"><div class="m-val" style="color:#00e676;">Booking</div><div class="m-lbl">System</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">Real-Time</div><div class="m-lbl">Notifications</div></div>
+        <div class="metric"><div class="m-val" style="color:#b46aff;">iOS+Android</div><div class="m-lbl">Flutter</div></div>
+        <div class="metric"><div class="m-val" style="color:#ff4f5a;">Secure</div><div class="m-lbl">Payments</div></div>
+    </div>
+
+    <section class="section">
+        <div class="overview-card" style="--accent: var(--red);">
+            <p>
+                <strong>Fitness App</strong> is a comprehensive mobile application designed to connect users with personalised fitness services, promote healthier lifestyles, and provide seamless management of fitness-related activities.
+            </p>
+            <p style="margin-top: 14px;">
+                With a clean and modern user interface, the app simplifies navigation while focusing on usability and practicality. It is tailored for both beginners and fitness enthusiasts, offering features that enhance user experience and ensure consistency in their fitness journey — from browsing services and booking sessions to managing profiles and receiving real-time updates.
+            </p>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <h2 class="section-heading">App Screens</h2>
+
+        <div class="gallery-main" id="galleryMain">
+            <div class="gallery-device-bar">
+                <span style="font-size:10px;color:var(--red);font-weight:700;letter-spacing:0.1em;">FLUTTER</span>
+                <div class="device-label" id="galleryUrl">Fitness App — Login</div>
+                <span style="font-size:10px;color:var(--grey);">iOS · Android</span>
+            </div>
+            <div class="gallery-phone-stage">
+                <img class="gallery-main-img" id="galleryMainImg"
+                     src="fitness_screenshots/login.png"
+                     alt="Fitness App login screen">
+            </div>
+            <div class="gallery-caption">
+                <span class="fig-label" id="galleryFig">Fig 1</span>
+                <span id="galleryCaptionText">Secure authentication — email/password login with sign-up link and forgot password recovery.</span>
+            </div>
+        </div>
+
+        <div class="gallery-strip">
+            <div class="gallery-thumb active" onclick="setGallery(0)" id="thumb-0">
+                <img src="fitness_screenshots/login.png" alt="Login">
+                <div class="thumb-label">Login</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(1)" id="thumb-1">
+                <img src="fitness_screenshots/services.png" alt="Services">
+                <div class="thumb-label">Services</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(2)" id="thumb-2">
+                <img src="fitness_screenshots/profile.png" alt="Profile">
+                <div class="thumb-label">Profile</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(3)" id="thumb-3">
+                <img src="fitness_screenshots/notifications.png" alt="Notifications">
+                <div class="thumb-label">Alerts</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Core Features</h2>
+        <div class="feature-list">
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#ff4f5a;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                <div><strong>Secure Authentication</strong> — Login and sign-up flow with email/password access, forgot password recovery, and new user profile setup.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                <div><strong>Services &amp; Categories</strong> — Diverse fitness options including Bootcamps, Yoga, Assisted Stretching, and Personal Training with detailed descriptions.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#b46aff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+                <div><strong>Profile &amp; Personalisation</strong> — Users manage contact info, fitness goals, progress tracking, and view trainer profiles for tailored engagement.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+                <div><strong>Booking System</strong> — Schedule sessions with trainers, book group classes, select time slots, and manage upcoming appointments.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+                <div><strong>Secure Payments</strong> — Integrated payment system for booking sessions with secure online transactions and booking management.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#ff4f5a;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+                <div><strong>Notifications &amp; Updates</strong> — Real-time alerts for appointment confirmations, trainer updates, session reminders, and rescheduling alerts.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">User Workflow</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <div class="flow-num red-gradient">1</div>
+                <div>
+                    <div class="flow-title">Sign Up &amp; Login</div>
+                    <div class="flow-desc">Secure authentication with email/password, new user registration, and forgot password recovery.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num red-gradient">2</div>
+                <div>
+                    <div class="flow-title">Browse Fitness Services</div>
+                    <div class="flow-desc">Explore categories — Bootcamps, Yoga, Assisted Stretching, and Personal Training with search and detailed descriptions.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num red-gradient">3</div>
+                <div>
+                    <div class="flow-title">Book a Session</div>
+                    <div class="flow-desc">Select a trainer, pick a time slot, and complete secure payment to confirm your session booking.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num red-gradient">4</div>
+                <div>
+                    <div class="flow-title">Get Notified &amp; Attend</div>
+                    <div class="flow-desc">Receive real-time confirmations, reminders, and rescheduling alerts — then attend your session and track progress.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Technologies Used</h2>
+        <div class="tech-grid">
+            <span class="tech-pill">Flutter</span>
+            <span class="tech-pill">Dart</span>
+            <span class="tech-pill">Firebase</span>
+            <span class="tech-pill">REST APIs</span>
+            <span class="tech-pill">iOS</span>
+            <span class="tech-pill">Android</span>
+        </div>
+    </section>
+
+    <section class="project-links-section">
+        <h2 class="section-heading">Project Resources</h2>
+        <div class="links-grid single-link">
+            <a href="https://drive.google.com/file/d/1xtR3ZiuD8wTk4xYMdJ6JNQrzaPVcK6w9/view?usp=drive_link"
+               target="_blank" rel="noopener" class="project-link-card doc-card">
+                <div class="link-card-icon">📄</div>
+                <div class="link-card-body">
+                    <div class="link-card-label">Documentation</div>
+                    <div class="link-card-title">App Overview PDF</div>
+                    <div class="link-card-desc">Full documentation — features, services, booking workflow, and all app screens</div>
+                </div>
+                <div class="link-card-arrow">→</div>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="golden-loaf.html" class="fnav-link">← Golden Loaf</a>
+        <a href="flutter.html" class="fnav-link">All Mobile Apps</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+
+    const slides = [
+        { src: 'fitness_screenshots/login.png', url: 'Fitness App — Login', fig: 'Fig 1', caption: 'Secure authentication — email/password login with sign-up link and forgot password recovery.' },
+        { src: 'fitness_screenshots/services.png', url: 'Fitness App — Services', fig: 'Fig 2', caption: 'Services browsing — Bootcamps, Yoga, Assisted Stretching, and Personal Training categories with search.' },
+        { src: 'fitness_screenshots/profile.png', url: 'Fitness App — Profile', fig: 'Fig 3', caption: 'Trainer profile — contact info, fitness credentials, and personalised engagement details.' },
+        { src: 'fitness_screenshots/notifications.png', url: 'Fitness App — Notifications', fig: 'Fig 4', caption: 'Real-time notifications — appointment confirmations, rescheduling alerts, and trainer updates.' }
+    ];
+
+    let current = 0;
+
+    function setGallery(idx) {
+        current = idx;
+        const slide = slides[idx];
+        const mainImg = document.getElementById('galleryMainImg');
+        mainImg.style.opacity = '0';
+        mainImg.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => {
+            mainImg.src = slide.src;
+            mainImg.alt = slide.caption;
+            document.getElementById('galleryUrl').textContent = slide.url;
+            document.getElementById('galleryFig').textContent = slide.fig;
+            document.getElementById('galleryCaptionText').textContent = slide.caption;
+            mainImg.style.opacity = '1';
+        }, 200);
+        document.querySelectorAll('.gallery-thumb').forEach((t, i) => {
+            t.classList.toggle('active', i === idx);
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') setGallery((current + 1) % slides.length);
+        if (e.key === 'ArrowLeft')  setGallery((current - 1 + slides.length) % slides.length);
+    });
+
+    document.getElementById('galleryMainImg').addEventListener('click', () => {
+        setGallery((current + 1) % slides.length);
+    });
+</script>
+</body>
+</html>

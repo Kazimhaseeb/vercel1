@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG & LLM Document Intelligence — QuantStack</title>
+    <meta name="description" content="LangChain + ChromaDB + GPT-4 pipelines for semantic Q&A over financial reports, SEC filings and research papers with source citations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <div class="nav-project-label">04 · RAG / LLM</div>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(180,100,255,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.10) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Project 04</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-purple-pill">RAG / LLM</span>
+        </div>
+        <h1 class="hero-title">RAG & LLM<br><span class="gradient-purple">Document Intelligence</span></h1>
+        <p class="hero-sub">Retrieval-Augmented Generation pipelines grounding large language models in private knowledge bases — enabling accurate, citation-backed Q&A over financial reports, SEC filings, research papers, and proprietary documents.</p>
+        <div class="hero-tags">
+            <span class="htag">LangChain</span>
+            <span class="htag">ChromaDB</span>
+            <span class="htag">OpenAI GPT-4</span>
+            <span class="htag">FastAPI</span>
+            <span class="htag">PyMuPDF</span>
+            <span class="htag">sentence-transformers</span>
+            <span class="htag">Docker</span>
+            <span class="htag">rank-bm25</span>
+        </div>
+    </div>
+</header>
+
+<main class="proj-main">
+
+    <div class="metrics-strip">
+        <div class="metric"><div class="m-val" style="color:#b46aff;">PDF</div><div class="m-lbl">Document Ingestion</div></div>
+        <div class="metric"><div class="m-val" style="color:#b46aff;">Semantic</div><div class="m-lbl">Search Type</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">GPT-4</div><div class="m-lbl">LLM Backend</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">ChromaDB</div><div class="m-lbl">Vector Store</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">FastAPI</div><div class="m-lbl">API Layer</div></div>
+        <div class="metric"><div class="m-val" style="color:#00e676;">Cited</div><div class="m-lbl">Responses</div></div>
+    </div>
+
+    <section class="section">
+        <div class="overview-card">
+            <p>End-to-end RAG systems enabling natural language queries over large document collections. The pipeline ingests PDFs, financial reports, and research papers — chunks and embeds with OpenAI/sentence-transformers, stores in ChromaDB — then retrieves semantically relevant passages to augment GPT-4 completions with source citations. The <strong>AI Trading Research Assistant</strong> applies this to SEC filings and earnings call transcripts for investment research automation.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">RAG Pipeline Architecture</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#b46aff,#d8b4ff);">1</div>
+                <div><div class="flow-title">Document Ingestion</div><div class="flow-desc">PDF/DOCX files loaded with PyMuPDF, text extracted and cleaned, metadata preserved (source, page, section, date).</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#b46aff,#d8b4ff);">2</div>
+                <div><div class="flow-title">Chunking & Embedding</div><div class="flow-desc">RecursiveCharacterTextSplitter creates 512-token chunks with 50-token overlap. OpenAI text-embedding-3-small generates 1536-dim dense vectors.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#b46aff,#d8b4ff);">3</div>
+                <div><div class="flow-title">Vector Storage (ChromaDB)</div><div class="flow-desc">Embeddings + metadata stored in ChromaDB collections, persisted to disk. Supports hybrid search combining semantic cosine similarity with BM25 keyword matching.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#b46aff,#d8b4ff);">4</div>
+                <div><div class="flow-title">Query, Retrieval & Re-ranking</div><div class="flow-desc">User query embedded, top-K chunks retrieved by cosine similarity, then re-ranked with a cross-encoder for precision before passing to the LLM.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#b46aff,#d8b4ff);">5</div>
+                <div><div class="flow-title">Augmented Generation with Citations</div><div class="flow-desc">Retrieved context injected into GPT-4 prompt via LangChain. Response includes in-text citations with page references. FastAPI endpoint serves the full Q&A pipeline.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section two-col">
+        <div class="hbox purple">
+            <div class="hbox-label">AI Trading Research Assistant</div>
+            <p>Specialized RAG system over 500+ SEC 10-K/10-Q filings and earnings call transcripts. Enables queries like "What did Apple's CEO say about margins in Q3 2023?" with cited, grounded answers.</p>
+        </div>
+        <div class="hbox cyan">
+            <div class="hbox-label">Hybrid Search</div>
+            <p>Combines dense vector similarity (ChromaDB) with sparse BM25 keyword matching via rank-bm25. Cross-encoder re-ranking further improves precision before LLM augmentation.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Technologies Used</h2>
+        <div class="tech-grid">
+            <span class="tech-pill">LangChain</span>
+            <span class="tech-pill">ChromaDB</span>
+            <span class="tech-pill">OpenAI API</span>
+            <span class="tech-pill">sentence-transformers</span>
+            <span class="tech-pill">PyMuPDF</span>
+            <span class="tech-pill">FastAPI</span>
+            <span class="tech-pill">tiktoken</span>
+            <span class="tech-pill">pydantic v2</span>
+            <span class="tech-pill">Docker</span>
+            <span class="tech-pill">rank-bm25</span>
+            <span class="tech-pill">Uvicorn</span>
+            <span class="tech-pill">python-dotenv</span>
+        </div>
+    </section>
+
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="data-science.html" class="fnav-link">← Data Science</a>
+        <a href="backend.html" class="fnav-link">Backend & Web Apps →</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+</script>
+</body>
+</html>

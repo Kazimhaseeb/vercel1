@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flutter Mobile Apps — QuantStack Portfolio</title>
+    <meta name="description" content="Cross-platform Flutter mobile applications — Ejaz Saudi property management app with Ejar integration, iOS &amp; Android.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+    <style>
+        .hub-main { max-width: 1100px; margin: 0 auto; padding: 0 80px 100px; }
+        .hub-intro { margin-top: 48px; color: var(--grey); font-size: 16px; line-height: 1.8; max-width: 720px; }
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 40px; }
+        .hub-card {
+            display: block; text-decoration: none; border: 1px solid var(--border); border-radius: 18px;
+            overflow: hidden; background: rgba(5,9,26,0.5); transition: all 0.3s cubic-bezier(0.4,0,0.2,1); position: relative;
+        }
+        .hub-card:hover { transform: translateY(-6px); }
+        .hub-card.purple:hover { border-color: rgba(180,100,255,0.5); box-shadow: 0 20px 50px rgba(180,100,255,0.15); }
+        .hub-card.green:hover { border-color: rgba(0,230,118,0.5); box-shadow: 0 20px 50px rgba(0,230,118,0.12); }
+        .hub-card.green .hub-card-num { color: var(--green); }
+        .hub-card.green .hub-card-arrow { color: var(--green); }
+        .hub-card.gold:hover { border-color: rgba(245,166,35,0.5); box-shadow: 0 20px 50px rgba(245,166,35,0.12); }
+        .hub-card.gold .hub-card-num { color: var(--gold); }
+        .hub-card.gold .hub-card-arrow { color: var(--gold); }
+        .hub-card.red:hover { border-color: rgba(255,79,90,0.5); box-shadow: 0 20px 50px rgba(255,79,90,0.12); }
+        .hub-card.red .hub-card-num { color: var(--red); }
+        .hub-card.red .hub-card-arrow { color: var(--red); }
+        .hub-card-thumb {
+            height: 220px; overflow: hidden; border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #0d1535, #1a1040);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .hub-card-thumb img {
+            height: 200px; width: auto; max-width: 90%;
+            object-fit: contain; transition: transform 0.4s ease;
+        }
+        .hub-card:hover .hub-card-thumb img { transform: scale(1.04); }
+        .hub-card-body { padding: 24px 26px 28px; }
+        .hub-card-num {
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+            letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; color: var(--purple);
+        }
+        .hub-card-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800; color: var(--white); margin-bottom: 10px; line-height: 1.2; }
+        .hub-card-desc { font-size: 13px; color: var(--grey); line-height: 1.65; margin-bottom: 16px; }
+        .hub-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .hub-tag {
+            padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+            font-family: 'JetBrains Mono', monospace; background: rgba(136,146,176,0.1);
+            color: var(--grey); border: 1px solid rgba(136,146,176,0.12);
+        }
+        .hub-card-arrow { position: absolute; bottom: 24px; right: 26px; font-size: 20px; font-weight: 700; color: var(--purple); transition: transform 0.2s; }
+        .hub-card:hover .hub-card-arrow { transform: translateX(4px); }
+        .links-grid.single-link { grid-template-columns: 1fr; max-width: 560px; margin-top: 32px; }
+        @media (max-width: 700px) { .hub-main { padding: 0 24px 80px; } .proj-hero { padding-left: 24px; padding-right: 24px; } }
+    </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <div class="nav-project-label">06 · Mobile Development</div>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(180,100,255,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.10) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Section 06</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-purple-pill">FLUTTER · MOBILE</span>
+        </div>
+        <h1 class="hero-title">Flutter<br><span class="gradient-purple">Mobile Apps</span></h1>
+        <p class="hero-sub">Production cross-platform iOS and Android applications built with Flutter and Dart — real-world apps shipped to the App Store and Google Play with backend integration, push notifications, and polished native-feel UI.</p>
+    </div>
+</header>
+
+<main class="hub-main">
+    <p class="hub-intro">Select a project below for full documentation, in-app screenshot galleries, architecture breakdowns, and links to PDF docs and demo recordings.</p>
+
+    <div class="hub-grid">
+        <a href="ejaz.html" class="hub-card purple">
+            <div class="hub-card-thumb">
+                <img src="ejaz_screenshots/dashboard.png" alt="Ejaz financial dashboard">
+            </div>
+            <div class="hub-card-body">
+                <div class="hub-card-num">Project 01</div>
+                <div class="hub-card-title">Ejaz — Property Management</div>
+                <p class="hub-card-desc">All-in-one Saudi landlord platform — Ejar lease integration, rent tracking, expenses, tenant WhatsApp, financial dashboard. Flutter iOS &amp; Android.</p>
+                <div class="hub-card-tags">
+                    <span class="hub-tag">Flutter</span>
+                    <span class="hub-tag">Ejar API</span>
+                    <span class="hub-tag">Firebase</span>
+                    <span class="hub-tag">AWS</span>
+                </div>
+            </div>
+            <span class="hub-card-arrow">→</span>
+        </a>
+
+        <a href="fisico-da-urlo-app.html" class="hub-card green">
+            <div class="hub-card-thumb">
+                <img src="fisico_app_screenshots/qr_checkin.png" alt="Fisico Da Urlo QR check-in">
+            </div>
+            <div class="hub-card-body">
+                <div class="hub-card-num">Project 02</div>
+                <div class="hub-card-title">Fisico Da Urlo — Gym Member App</div>
+                <p class="hub-card-desc">QR-based gym attendance for members — instant check-in/out, profile &amp; history. Flutter app synced with FastAPI backend &amp; React admin panel.</p>
+                <div class="hub-card-tags">
+                    <span class="hub-tag">Flutter</span>
+                    <span class="hub-tag">FastAPI</span>
+                    <span class="hub-tag">QR</span>
+                    <span class="hub-tag">MySQL</span>
+                </div>
+            </div>
+            <span class="hub-card-arrow">→</span>
+        </a>
+
+        <a href="golden-loaf.html" class="hub-card gold">
+            <div class="hub-card-thumb">
+                <img src="bakery_screenshots/home.png" alt="Golden Loaf bakery home screen">
+            </div>
+            <div class="hub-card-body">
+                <div class="hub-card-num">Project 03</div>
+                <div class="hub-card-title">Golden Loaf — Bakery Shopping</div>
+                <p class="hub-card-desc">Personalized bakery e-commerce — taste profiles, curated browse, multi-address delivery, cart &amp; promo checkout. Warm Flutter UI for iOS &amp; Android.</p>
+                <div class="hub-card-tags">
+                    <span class="hub-tag">Flutter</span>
+                    <span class="hub-tag">Firebase</span>
+                    <span class="hub-tag">E-Commerce</span>
+                </div>
+            </div>
+            <span class="hub-card-arrow">→</span>
+        </a>
+
+        <a href="fitness-app.html" class="hub-card red">
+            <div class="hub-card-thumb">
+                <img src="fitness_screenshots/services.png" alt="Fitness App services screen">
+            </div>
+            <div class="hub-card-body">
+                <div class="hub-card-num">Project 04</div>
+                <div class="hub-card-title">Fitness App — Booking System</div>
+                <p class="hub-card-desc">Mobile fitness &amp; booking management — browse services, schedule sessions, secure payments, real-time notifications. Flutter iOS &amp; Android.</p>
+                <div class="hub-card-tags">
+                    <span class="hub-tag">Flutter</span>
+                    <span class="hub-tag">Firebase</span>
+                    <span class="hub-tag">Booking</span>
+                    <span class="hub-tag">Payments</span>
+                </div>
+            </div>
+            <span class="hub-card-arrow">→</span>
+        </a>
+    </div>
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="backend.html" class="fnav-link">← Web Apps</a>
+        <a href="automation.html" class="fnav-link">Automation →</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Loaf — Bakery Shopping App | QuantStack</title>
+    <meta name="description" content="Golden Loaf: Flutter bakery shopping app with personalized taste profiles, cart & checkout, location management, and warm UI — iOS & Android.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+    <style>
+        .gallery-section { margin-top: 56px; }
+        .gallery-main {
+            border-radius: 14px; overflow: hidden;
+            border: 1px solid rgba(245,166,35,0.35);
+            box-shadow: 0 28px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(245,166,35,0.1);
+            margin-top: 20px; transition: box-shadow 0.35s;
+            background: linear-gradient(180deg, #0d1535 0%, #1a1408 100%);
+        }
+        .gallery-main:hover { box-shadow: 0 36px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(245,166,35,0.3); }
+        .gallery-device-bar {
+            background: #141830; padding: 10px 16px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .device-label {
+            flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px;
+            padding: 4px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--grey);
+        }
+        .gallery-phone-stage {
+            display: flex; justify-content: center; align-items: center;
+            padding: 32px 24px 28px; min-height: 520px;
+        }
+        .gallery-main-img {
+            width: auto; max-width: min(300px, 42vw); max-height: 560px;
+            display: block; cursor: pointer; border-radius: 28px;
+            border: 3px solid rgba(245,166,35,0.4);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 40px rgba(245,166,35,0.12);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .gallery-main-img:hover { transform: scale(1.01); }
+        .gallery-caption {
+            background: rgba(5,9,26,0.85); border-top: 1px solid rgba(245,166,35,0.15);
+            padding: 12px 20px; font-size: 12px; color: var(--grey);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .gallery-caption .fig-label {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+            color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase;
+            background: rgba(245,166,35,0.12); border: 1px solid rgba(245,166,35,0.28);
+            border-radius: 4px; padding: 2px 8px; flex-shrink: 0;
+        }
+        .gallery-strip {
+            display: grid; grid-template-columns: repeat(6, 1fr);
+            gap: 10px; margin-top: 14px;
+        }
+        .gallery-thumb {
+            border-radius: 10px; overflow: hidden; border: 2px solid transparent;
+            cursor: pointer; transition: all 0.22s ease; position: relative;
+            background: #1a1408; aspect-ratio: 9/16; max-height: 140px;
+        }
+        .gallery-thumb img {
+            width: 100%; height: 100%; object-fit: cover; object-position: top center;
+            opacity: 0.55; transition: opacity 0.22s;
+        }
+        .gallery-thumb:hover img { opacity: 0.85; }
+        .gallery-thumb:hover { border-color: rgba(245,166,35,0.45); }
+        .gallery-thumb.active { border-color: var(--gold); }
+        .gallery-thumb.active img { opacity: 1; }
+        .thumb-label {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(5,9,26,0.95));
+            padding: 18px 4px 5px; font-size: 8px; font-weight: 700;
+            color: var(--grey); text-align: center; letter-spacing: 0.05em; text-transform: uppercase;
+        }
+        .gallery-thumb.active .thumb-label { color: var(--gold); }
+        @media (max-width: 900px) { .gallery-strip { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 800px) {
+            .gallery-phone-stage { min-height: 440px; padding: 20px; }
+        }
+        .project-links-section { margin-top: 56px; }
+        .links-grid.single-link { display: grid; grid-template-columns: 1fr; max-width: 560px; gap: 16px; margin-top: 20px; }
+        .project-link-card {
+            display: flex; align-items: center; gap: 18px; padding: 24px 28px;
+            border-radius: 14px; border: 1px solid; text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .project-link-card:hover { transform: translateY(-4px); }
+        .project-link-card.doc-card { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+        .project-link-card.doc-card:hover { border-color: rgba(245,166,35,0.6); box-shadow: 0 12px 40px rgba(245,166,35,0.15); }
+        .link-card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; background: rgba(245,166,35,0.12); border: 1px solid rgba(245,166,35,0.2); }
+        .link-card-body { flex: 1; }
+        .link-card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; color: var(--gold); }
+        .link-card-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .link-card-desc { font-size: 12px; color: var(--grey); }
+        .link-card-arrow { font-size: 20px; transition: transform 0.2s; color: var(--gold); }
+        .project-link-card:hover .link-card-arrow { transform: translateX(4px); }
+        .flow-num.gold-gradient { background: linear-gradient(135deg, var(--gold), #ffd166); }
+    </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <a href="flutter.html" class="nav-project-label" style="text-decoration:none;color:var(--grey);">Mobile · Project 03</a>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(245,166,35,0.20) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(180,100,255,0.08) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Project 03</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-gold-pill">FLUTTER · E-COMMERCE</span>
+        </div>
+        <h1 class="hero-title">Golden Loaf<br><span class="gradient-gold">Bakery Shopping</span></h1>
+        <p class="hero-sub">A personalized bakery shopping mobile app built with Flutter — users set taste preferences for tailored recommendations, browse curated products, manage delivery locations, and complete a smooth cart and checkout flow in a warm, inviting interface.</p>
+        <div class="hero-tags">
+            <span class="htag">Flutter</span>
+            <span class="htag">Dart</span>
+            <span class="htag">Firebase</span>
+            <span class="htag">REST APIs</span>
+            <span class="htag">E-Commerce</span>
+            <span class="htag">Personalization</span>
+        </div>
+    </div>
+</header>
+
+<main class="proj-main">
+
+    <div class="metrics-strip">
+        <div class="metric"><div class="m-val" style="color:#f5a623;">6</div><div class="m-lbl">Core Screens</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">Taste</div><div class="m-lbl">Profiles</div></div>
+        <div class="metric"><div class="m-val" style="color:#00e676;">Cart</div><div class="m-lbl">Checkout</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">Multi</div><div class="m-lbl">Addresses</div></div>
+        <div class="metric"><div class="m-val" style="color:#b46aff;">iOS+Android</div><div class="m-lbl">Flutter</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">Secure</div><div class="m-lbl">Auth Flow</div></div>
+    </div>
+
+    <section class="section">
+        <div class="overview-card" style="--accent: var(--gold);">
+            <p>
+                <strong>Golden Loaf</strong> is a mobile application tailored for bakery enthusiasts, offering a seamless and highly personalized shopping experience. Users explore, select, and purchase bakery products according to their preferences — from whole wheat and sourdough to rye and puff pastry.
+            </p>
+            <p style="margin-top: 14px;">
+                With a warm and inviting interface, the app features curated recommendations, easy location management for home and office delivery, promo codes at checkout, and full account settings — making every browse and order feel effortless.
+            </p>
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <h2 class="section-heading">App Screens</h2>
+
+        <div class="gallery-main" id="galleryMain">
+            <div class="gallery-device-bar">
+                <span style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:0.1em;">FLUTTER</span>
+                <div class="device-label" id="galleryUrl">Golden Loaf — Welcome</div>
+                <span style="font-size:10px;color:var(--grey);">iOS · Android</span>
+            </div>
+            <div class="gallery-phone-stage">
+                <img class="gallery-main-img" id="galleryMainImg"
+                     src="bakery_screenshots/splash.png"
+                     alt="Golden Loaf splash screen">
+            </div>
+            <div class="gallery-caption">
+                <span class="fig-label" id="galleryFig">Fig 1</span>
+                <span id="galleryCaptionText">Splash / welcome screen — Golden Loaf branding sets an elegant, user-focused tone.</span>
+            </div>
+        </div>
+
+        <div class="gallery-strip">
+            <div class="gallery-thumb active" onclick="setGallery(0)" id="thumb-0">
+                <img src="bakery_screenshots/splash.png" alt="Splash">
+                <div class="thumb-label">Splash</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(1)" id="thumb-1">
+                <img src="bakery_screenshots/auth.png" alt="Auth">
+                <div class="thumb-label">Auth</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(2)" id="thumb-2">
+                <img src="bakery_screenshots/preferences.png" alt="Preferences">
+                <div class="thumb-label">Taste</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(3)" id="thumb-3">
+                <img src="bakery_screenshots/home.png" alt="Home">
+                <div class="thumb-label">Home</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(4)" id="thumb-4">
+                <img src="bakery_screenshots/cart.png" alt="Cart">
+                <div class="thumb-label">Cart</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(5)" id="thumb-5">
+                <img src="bakery_screenshots/settings.png" alt="Settings">
+                <div class="thumb-label">Settings</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Core Features</h2>
+        <div class="feature-list">
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+                <div><strong>Personal Taste Profiles</strong> — Users select bakery preferences (Whole Wheat, Sourdough, Rye, Puff Pastry) for tailored product recommendations.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                <div><strong>Homepage &amp; Browse</strong> — Search bar, personalised faves section, and categorised products with high-quality images.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                <div><strong>Location Management</strong> — Save multiple delivery addresses (Home, Office) with street, city, postal code, and phone.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span>
+                <div><strong>Cart &amp; Checkout</strong> — Quantity adjustment, promo codes, order summary, and estimated delivery time.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#b46aff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+                <div><strong>Settings &amp; Account</strong> — Profile info, saved locations, taste preferences, and favourite items in one place.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                <div><strong>Secure Authentication</strong> — Streamlined sign-up and login with data protection for a safe onboarding experience.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Shopping Workflow</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <div class="flow-num gold-gradient">1</div>
+                <div>
+                    <div class="flow-title">Welcome &amp; Sign Up</div>
+                    <div class="flow-desc">Branded splash leads into secure registration or login with email and password.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num gold-gradient">2</div>
+                <div>
+                    <div class="flow-title">Set Taste Preferences</div>
+                    <div class="flow-desc">Onboarding captures bakery preferences to personalise recommendations from the first browse.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num gold-gradient">3</div>
+                <div>
+                    <div class="flow-title">Browse &amp; Add to Cart</div>
+                    <div class="flow-desc">Homepage search, faves, and categories help users discover products and build their order.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num gold-gradient">4</div>
+                <div>
+                    <div class="flow-title">Checkout &amp; Deliver</div>
+                    <div class="flow-desc">Review cart, apply promo codes, confirm saved address, and place order with delivery estimate.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Technologies Used</h2>
+        <div class="tech-grid">
+            <span class="tech-pill">Flutter</span>
+            <span class="tech-pill">Dart</span>
+            <span class="tech-pill">Firebase</span>
+            <span class="tech-pill">REST APIs</span>
+            <span class="tech-pill">iOS</span>
+            <span class="tech-pill">Android</span>
+        </div>
+    </section>
+
+    <section class="project-links-section">
+        <h2 class="section-heading">Project Resources</h2>
+        <div class="links-grid single-link">
+            <a href="https://drive.google.com/file/d/1Vuirg4zFoLOjWZ5abuXT5WAHesU4pFWk/view?usp=drive_link"
+               target="_blank" rel="noopener" class="project-link-card doc-card">
+                <div class="link-card-icon">📄</div>
+                <div class="link-card-body">
+                    <div class="link-card-label">Documentation</div>
+                    <div class="link-card-title">App Overview PDF</div>
+                    <div class="link-card-desc">Full documentation — features, UI walkthrough, taste profiles, cart flow, and all app screens</div>
+                </div>
+                <div class="link-card-arrow">→</div>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="fisico-da-urlo-app.html" class="fnav-link">← Fisico Da Urlo</a>
+        <a href="flutter.html" class="fnav-link">All Mobile Apps</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+
+    const slides = [
+        { src: 'bakery_screenshots/splash.png', url: 'Golden Loaf — Welcome', fig: 'Fig 1', caption: 'Splash / welcome screen — Golden Loaf branding sets an elegant, user-focused experience.' },
+        { src: 'bakery_screenshots/auth.png', url: 'Golden Loaf — Sign Up / Login', fig: 'Fig 2', caption: 'Authentication — secure registration and login with email and password.' },
+        { src: 'bakery_screenshots/preferences.png', url: 'Golden Loaf — Taste Preferences', fig: 'Fig 3', caption: 'Personal taste onboarding — select Whole Wheat, Sourdough, Rye, Puff Pastry for tailored recommendations.' },
+        { src: 'bakery_screenshots/home.png', url: 'Golden Loaf — Home', fig: 'Fig 4', caption: 'Homepage — search bar, personalised faves, and categorised bakery products with rich imagery.' },
+        { src: 'bakery_screenshots/cart.png', url: 'Golden Loaf — Cart & Checkout', fig: 'Fig 5', caption: 'Cart & checkout — review items, promo codes, delivery details, and estimated delivery time.' },
+        { src: 'bakery_screenshots/settings.png', url: 'Golden Loaf — Settings', fig: 'Fig 6', caption: 'Settings — manage profile, saved locations, taste preferences, and favourite items.' }
+    ];
+
+    let current = 0;
+
+    function setGallery(idx) {
+        current = idx;
+        const slide = slides[idx];
+        const mainImg = document.getElementById('galleryMainImg');
+        mainImg.style.opacity = '0';
+        mainImg.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => {
+            mainImg.src = slide.src;
+            mainImg.alt = slide.caption;
+            document.getElementById('galleryUrl').textContent = slide.url;
+            document.getElementById('galleryFig').textContent = slide.fig;
+            document.getElementById('galleryCaptionText').textContent = slide.caption;
+            mainImg.style.opacity = '1';
+        }, 200);
+        document.querySelectorAll('.gallery-thumb').forEach((t, i) => {
+            t.classList.toggle('active', i === idx);
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') setGallery((current + 1) % slides.length);
+        if (e.key === 'ArrowLeft')  setGallery((current - 1 + slides.length) % slides.length);
+    });
+
+    document.getElementById('galleryMainImg').addEventListener('click', () => {
+        setGallery((current + 1) % slides.length);
+    });
+</script>
+</body>
+</html>

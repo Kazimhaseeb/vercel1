@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmic Trading Bots — Technical Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:       #05091a;
+            --navy-mid:   #0d1535;
+            --navy-light: #141d45;
+            --cyan:       #00d4ff;
+            --cyan-soft:  #00b4d8;
+            --gold:       #f5a623;
+            --gold-soft:  #e8962a;
+            --green:      #00e676;
+            --red:        #ff4f5a;
+            --white:      #f0f4ff;
+            --grey:       #8892b0;
+            --border:     rgba(0,212,255,0.15);
+        }
+
+        /* ===== BASE ===== */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* ===== PRINT MEDIA ===== */
+        @media print {
+            body { background: #fff; color: #111; font-size: 12px; }
+            .cover { page-break-after: always; background: #05091a !important; }
+            .bot-section { page-break-inside: avoid; }
+            .toc-page { page-break-after: always; }
+            .section-break { page-break-before: always; }
+            .no-print { display: none; }
+            a { color: inherit; text-decoration: none; }
+            .badge { border: 1px solid #333; color: #333 !important; background: #f5f5f5 !important; }
+            .tag { background: #e0e0e0 !important; color: #333 !important; }
+            .highlight-box { border: 1px solid #333; background: #f9f9f9 !important; }
+            .code-block { background: #f4f4f4 !important; color: #333 !important; border: 1px solid #ccc; }
+            .metrics-grid .metric-card { border: 1px solid #ccc; background: #f9f9f9 !important; }
+            .section-header { background: #05091a !important; }
+        }
+
+        /* ===== LAYOUT ===== */
+        .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+        /* ===== COVER PAGE ===== */
+        .cover {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #05091a 0%, #0d1535 50%, #05091a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(0,212,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(245,166,35,0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cover-grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .cover-logo-row {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        .exchange-badge {
+            padding: 8px 18px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            background: rgba(13,21,53,0.7);
+            backdrop-filter: blur(8px);
+            color: var(--cyan);
+        }
+
+        .cover-eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(38px, 6vw, 64px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-title .gradient-text {
+            background: linear-gradient(135deg, var(--cyan), #7eb8ff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-subtitle {
+            font-size: 18px;
+            color: var(--grey);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--gold));
+            border-radius: 2px;
+            margin: 24px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+            margin-top: 20px;
+        }
+
+        .cover-meta-item {
+            text-align: center;
+        }
+
+        .cover-meta-item .label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--grey);
+            margin-bottom: 4px;
+        }
+
+        .cover-meta-item .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--cyan);
+        }
+
+        .cover-stat-row {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 50px;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+        }
+
+        .cover-stat {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 24px;
+            background: rgba(13,21,53,0.6);
+            backdrop-filter: blur(8px);
+            text-align: center;
+        }
+
+        .cover-stat .s-num { font-size: 26px; font-weight: 900; color: var(--gold); }
+        .cover-stat .s-label { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; margin-top: 2px; }
+
+        /* ===== TOC ===== */
+        .toc-page {
+            padding: 80px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .toc-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--cyan);
+            margin-bottom: 8px;
+        }
+
+        .toc-subtitle {
+            color: var(--grey);
+            font-size: 14px;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px dashed rgba(136,146,176,0.2);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .toc-item:hover { color: var(--cyan); }
+
+        .toc-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cyan);
+            width: 28px;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .toc-name {
+            font-size: 15px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .toc-exchange-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .tag-alpaca { background: rgba(0,212,255,0.12); color: var(--cyan); }
+        .tag-binance { background: rgba(245,166,35,0.15); color: var(--gold); }
+        .tag-bybit { background: rgba(255,79,90,0.12); color: var(--red); }
+        .tag-ig { background: rgba(0,230,118,0.12); color: var(--green); }
+        .tag-tastytrade { background: rgba(180,100,255,0.12); color: #b46aff; }
+        .tag-polygon { background: rgba(100,180,255,0.12); color: #64b4ff; }
+
+        /* ===== SECTION HEADER ===== */
+        .section-header {
+            background: linear-gradient(135deg, #0d1535, #141d45);
+            padding: 70px 60px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 0% 50%, rgba(0,212,255,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse at 100% 50%, rgba(245,166,35,0.07) 0%, transparent 60%);
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            line-height: 1.15;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 16px;
+        }
+
+        .section-tagline {
+            font-size: 16px;
+            color: var(--grey);
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+            line-height: 1.6;
+        }
+
+        .section-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border: 1px solid transparent;
+        }
+
+        .badge-cyan { background: rgba(0,212,255,0.12); color: var(--cyan); border-color: rgba(0,212,255,0.25); }
+        .badge-gold { background: rgba(245,166,35,0.12); color: var(--gold); border-color: rgba(245,166,35,0.25); }
+        .badge-green { background: rgba(0,230,118,0.12); color: var(--green); border-color: rgba(0,230,118,0.25); }
+        .badge-red { background: rgba(255,79,90,0.12); color: var(--red); border-color: rgba(255,79,90,0.25); }
+        .badge-purple { background: rgba(180,100,255,0.12); color: #b46aff; border-color: rgba(180,100,255,0.25); }
+        .badge-blue { background: rgba(100,180,255,0.12); color: #64b4ff; border-color: rgba(100,180,255,0.25); }
+
+        /* ===== BOT SECTION BODY ===== */
+        .bot-body {
+            padding: 50px 60px;
+            background: var(--navy-mid);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ===== OVERVIEW CARD ===== */
+        .overview-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 32px;
+            background: rgba(5,9,26,0.6);
+            margin-bottom: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--gold));
+        }
+
+        .overview-card p {
+            color: var(--white);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* ===== METRICS GRID ===== */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .metric-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 18px;
+            background: rgba(5,9,26,0.5);
+            text-align: center;
+        }
+
+        .metric-card .m-icon { font-size: 22px; margin-bottom: 8px; }
+        .metric-card .m-value { font-size: 20px; font-weight: 800; color: var(--cyan); margin-bottom: 4px; }
+        .metric-card .m-label { font-size: 11px; color: var(--grey); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+        /* ===== CONTENT SECTIONS ===== */
+        .content-section {
+            margin-bottom: 36px;
+        }
+
+        .content-section h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-section h3::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .content-section p {
+            color: #c8d3f5;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        /* ===== FEATURE LIST ===== */
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(5,9,26,0.4);
+            font-size: 13px;
+            color: #c8d3f5;
+            line-height: 1.5;
+        }
+
+        .feature-item .fi-icon {
+            color: var(--cyan);
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .feature-item .fi-icon.gold { color: var(--gold); }
+        .feature-item .fi-icon.green { color: var(--green); }
+        .feature-item .fi-icon.red { color: var(--red); }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight-box {
+            border: 1px solid;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .highlight-box.cyan { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+        .highlight-box.gold { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+        .highlight-box.green { border-color: rgba(0,230,118,0.3); background: rgba(0,230,118,0.05); }
+        .highlight-box.red { border-color: rgba(255,79,90,0.3); background: rgba(255,79,90,0.05); }
+
+        .highlight-box .hb-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .highlight-box.cyan .hb-label { color: var(--cyan); }
+        .highlight-box.gold .hb-label { color: var(--gold); }
+        .highlight-box.green .hb-label { color: var(--green); }
+        .highlight-box.red .hb-label { color: var(--red); }
+
+        .highlight-box p {
+            color: #c8d3f5;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            background: #020817;
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 10px;
+            padding: 20px 22px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #a8b2d8;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .code-block .kw { color: #c792ea; }
+        .code-block .str { color: #c3e88d; }
+        .code-block .num { color: var(--gold); }
+        .code-block .cm { color: #546e7a; }
+        .code-block .fn { color: #82aaff; }
+        .code-block .bool { color: var(--cyan); }
+
+        /* ===== STRATEGY FLOW ===== */
+        .strategy-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 16px 0;
+            position: relative;
+        }
+
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 44px;
+            bottom: -16px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--cyan), transparent);
+        }
+
+        .flow-step:last-child::before { display: none; }
+
+        .flow-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), #7eb8ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+
+        .flow-content .flow-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .flow-content .flow-desc {
+            font-size: 13px;
+            color: var(--grey);
+            line-height: 1.6;
+        }
+
+        /* ===== TAGS ROW ===== */
+        .tags-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(136,146,176,0.12);
+            color: var(--grey);
+        }
+
+        /* ===== TABLE ===== */
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .config-table thead tr {
+            background: rgba(0,212,255,0.08);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .config-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--cyan);
+        }
+
+        .config-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(136,146,176,0.1);
+            color: #c8d3f5;
+            vertical-align: top;
+        }
+
+        .config-table tr:last-child td { border-bottom: none; }
+        .config-table tr:hover td { background: rgba(0,212,255,0.03); }
+
+        .config-table .key-col {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--gold);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .config-table .type-col {
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ===== TWO COLUMN ===== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+        .col-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            background: rgba(5,9,26,0.4);
+        }
+
+        .col-box h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .col-box ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .col-box ul li {
+            font-size: 13px;
+            color: #c8d3f5;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .col-box ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+            font-size: 12px;
+        }
+
+        /* ===== CHAPTER INTRO ===== */
+        .chapter-intro {
+            padding: 60px 60px 0;
+            background: var(--navy-mid);
+        }
+
+        /* ===== FINAL SECTION ===== */
+        .final-section {
+            background: linear-gradient(135deg, #0d1535, #141d45);
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .final-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(245,166,35,0.10) 0%, transparent 60%);
+        }
+
+        .final-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 800;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 16px;
+        }
+
+        .final-section .gradient-text {
+            background: linear-gradient(135deg, var(--cyan), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-section p {
+            font-size: 16px;
+            color: var(--grey);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        .future-bots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            max-width: 900px;
+            margin: 0 auto 48px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .future-bot-card {
+            border: 1px dashed rgba(0,212,255,0.25);
+            border-radius: 14px;
+            padding: 24px 20px;
+            background: rgba(5,9,26,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .future-bot-card .fb-icon { font-size: 28px; margin-bottom: 10px; }
+        .future-bot-card .fb-title { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+        .future-bot-card .fb-desc { font-size: 12px; color: var(--grey); line-height: 1.5; }
+        .future-bot-card .fb-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: rgba(0,212,255,0.1);
+            color: var(--cyan);
+        }
+
+        /* ===== SECTION SEPARATOR ===== */
+        .sep {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            margin: 0;
+        }
+
+        /* ===== HORIZONTAL RULE ===== */
+        hr.fancy {
+            border: none;
+            border-top: 1px dashed rgba(136,146,176,0.2);
+            margin: 32px 0;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--navy); }
+        ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
+
+        /* ===== SVG ICON STYLES ===== */
+        .m-icon svg { color: var(--cyan); display: block; margin: 0 auto; }
+        .fi-icon svg { display: block; flex-shrink: 0; }
+        .fi-icon { display: flex; align-items: center; }
+        .fi-icon.gold svg { color: var(--gold); }
+        .fi-icon.green svg { color: var(--green); }
+        .fi-icon.red svg { color: var(--red); }
+        .fb-icon svg { color: var(--cyan); display: block; margin: 0 auto; }
+
+        /* ===== PROJECT LINKS ===== */
+        .project-links-section { margin-top: 0; }
+
+        .project-links-section .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--white);
+        }
+
+        .project-links-section .section-heading::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .links-grid.single-link {
+            grid-template-columns: 1fr;
+            max-width: 560px;
+        }
+
+        .project-link-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 24px 28px;
+            border-radius: 14px;
+            border: 1px solid;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-link-card:hover { transform: translateY(-4px); }
+
+        .project-link-card.doc-card {
+            border-color: rgba(245,166,35,0.3);
+            background: rgba(245,166,35,0.05);
+        }
+        .project-link-card.doc-card:hover {
+            border-color: rgba(245,166,35,0.6);
+            box-shadow: 0 12px 40px rgba(245,166,35,0.15);
+        }
+
+        .link-card-icon {
+            width: 54px; height: 54px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            background: rgba(245,166,35,0.12);
+            border: 1px solid rgba(245,166,35,0.2);
+            color: var(--gold);
+        }
+
+        .link-card-body { flex: 1; }
+
+        .link-card-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            color: var(--gold);
+        }
+
+        .link-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .link-card-desc { font-size: 12px; color: var(--grey); }
+
+        .link-card-arrow { font-size: 20px; transition: transform 0.2s; color: var(--gold); }
+        .project-link-card:hover .link-card-arrow { transform: translateX(4px); }
+
+        @media (max-width: 640px) { .links-grid { grid-template-columns: 1fr; } }
+
+        /* ===== PRINT BUTTON ===== */
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 26px;
+            background: linear-gradient(135deg, var(--cyan), #7eb8ff);
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 8px 32px rgba(0,212,255,0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 0.04em;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,212,255,0.5);
+        }
+    </style>
+</head>
+<body>
+<nav style="position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,9,26,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,212,255,0.15);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="#" onclick="history.back();return false;" style="display:flex;align-items:center;gap:8px;color:#8892b0;text-decoration:none;font-size:13px;font-weight:600;font-family:Inter,sans-serif;transition:color 0.2s;" onmouseover="this.style.color='#00d4ff'" onmouseout="this.style.color='#8892b0'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8892b0;letter-spacing:0.12em;text-transform:uppercase;">01 · Algorithmic Trading Bots</span>
+</nav>
+<div style="height:60px;"></div>
+
+
+<!-- ===== COVER PAGE ===== -->
+<div class="cover">
+    <div class="cover-grid-lines"></div>
+
+    <div class="cover-logo-row">
+        <span class="exchange-badge">ALPACA</span>
+        <span class="exchange-badge">BINANCE</span>
+        <span class="exchange-badge">BYBIT</span>
+        <span class="exchange-badge">IG BROKER</span>
+        <span class="exchange-badge">TASTYTRADE</span>
+        <span class="exchange-badge">POLYGON.IO</span>
+    </div>
+
+    <div class="cover-eyebrow">Algorithmic Trading Systems</div>
+
+    <h1 class="cover-title">
+        <span class="gradient-text">Trading Bots</span><br>
+        Technical Documentation
+    </h1>
+
+    <p class="cover-subtitle">
+        A comprehensive technical reference covering all automated trading systems,
+        strategies, risk management frameworks, and broker integrations.
+    </p>
+
+    <div class="cover-divider"></div>
+
+    <div class="cover-meta">
+        <div class="cover-meta-item">
+            <div class="label">Version</div>
+            <div class="value">1.0</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Year</div>
+            <div class="value">2026</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Language</div>
+            <div class="value">Python</div>
+        </div>
+    </div>
+
+    <div class="cover-stat-row">
+        <div class="cover-stat">
+            <div class="s-num">10</div>
+            <div class="s-label">Total Bots / Modules</div>
+        </div>
+        <div class="cover-stat">
+            <div class="s-num">5</div>
+            <div class="s-label">Exchanges / Brokers</div>
+        </div>
+        <div class="cover-stat">
+            <div class="s-num">6+</div>
+            <div class="s-label">Strategy Types</div>
+        </div>
+        <div class="cover-stat">
+            <div class="s-num">100%</div>
+            <div class="s-label">Python Powered</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TABLE OF CONTENTS ===== -->
+<div class="toc-page">
+    <div class="toc-title">Table of Contents</div>
+    <div class="toc-subtitle">A full index of all bots, strategies, and systems documented in this reference.</div>
+
+    <a href="#bot1" class="toc-item">
+        <span class="toc-num">01</span>
+        <span class="toc-name">Alpaca Crypto Bot — SMA + RSI with Advanced Risk Management</span>
+        <span class="toc-exchange-tag tag-alpaca">ALPACA</span>
+    </a>
+    <a href="#bot2" class="toc-item">
+        <span class="toc-num">02</span>
+        <span class="toc-name">Alpaca RSI Bot — Dual-SMA Crossover with RSI Filter</span>
+        <span class="toc-exchange-tag tag-alpaca">ALPACA</span>
+    </a>
+    <a href="#bot3" class="toc-item">
+        <span class="toc-num">03</span>
+        <span class="toc-name">Alpaca WebSocket Bot — Real-Time Dip-Buy Strategy</span>
+        <span class="toc-exchange-tag tag-alpaca">ALPACA</span>
+    </a>
+    <a href="#bot4" class="toc-item">
+        <span class="toc-num">04</span>
+        <span class="toc-name">Binance New Listing Bot — Auto-Discovery & Momentum Trading</span>
+        <span class="toc-exchange-tag tag-binance">BINANCE</span>
+    </a>
+    <a href="#bot5" class="toc-item">
+        <span class="toc-num">05</span>
+        <span class="toc-name">Binance RSI Bot — Multi-Symbol Futures Screener</span>
+        <span class="toc-exchange-tag tag-binance">BINANCE</span>
+    </a>
+    <a href="#bot6" class="toc-item">
+        <span class="toc-num">06</span>
+        <span class="toc-name">Binance Multi-Timeframe Bot — Full Dashboard with Backtesting</span>
+        <span class="toc-exchange-tag tag-binance">BINANCE</span>
+    </a>
+    <a href="#bot7" class="toc-item">
+        <span class="toc-num">07</span>
+        <span class="toc-name">Bybit Grid Bot — Dynamic Grid Trading Engine</span>
+        <span class="toc-exchange-tag tag-bybit">BYBIT</span>
+    </a>
+    <a href="#bot8" class="toc-item">
+        <span class="toc-num">08</span>
+        <span class="toc-name">IG Broker Five-Indicator Bot — Multi-Signal Consensus Strategy</span>
+        <span class="toc-exchange-tag tag-ig">IG BROKER</span>
+    </a>
+    <a href="#bot9" class="toc-item">
+        <span class="toc-num">09</span>
+        <span class="toc-name">TastyTrade Options Bot — Iron Condor Credit Spread Engine</span>
+        <span class="toc-exchange-tag tag-tastytrade">TASTYTRADE</span>
+    </a>
+    <a href="#bot10" class="toc-item">
+        <span class="toc-num">10</span>
+        <span class="toc-name">Stock Price Data Fetcher — Polygon.io OHLCV Archiver</span>
+        <span class="toc-exchange-tag tag-polygon">POLYGON.IO</span>
+    </a>
+</div>
+
+<!-- ========================================================== -->
+<!-- BOT 1 — ALPACA CRYPTO BOT -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="bot1">
+    <div class="section-header">
+        <div class="section-num">BOT 01 / ALPACA MARKETS</div>
+        <h2 class="section-title">Alpaca Crypto Bot</h2>
+        <p class="section-tagline">An advanced multi-symbol equity/crypto trading bot built on Alpaca Markets with SMA crossover signals, RSI confirmation, dynamic position sizing, and a full suite of risk controls including cooldowns, consecutive-loss protection, take-profit, and trailing stop-losses.</p>
+        <div class="section-badges">
+            <span class="badge badge-cyan">SMA Crossover</span>
+            <span class="badge badge-gold">RSI Filter</span>
+            <span class="badge badge-green">Take Profit</span>
+            <span class="badge badge-green">Trailing Stop</span>
+            <span class="badge badge-red">Loss Protection</span>
+            <span class="badge badge-blue">Paper &amp; Live</span>
+            <span class="badge badge-purple">Multi-Symbol</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This is arguably the most feature-complete bot in the portfolio. It targets multiple equities simultaneously (e.g., NVDA, AAPL, TSLA) using minute-level bars and combines a Simple Moving Average (SMA) crossover for trend direction with an RSI momentum filter to avoid entering overbought or oversold conditions. What sets it apart is its <strong>TradeTracker</strong> system — a persistent trade-history logger that enforces cooldown periods after exits and halts new entries after a configurable number of consecutive losses. Position sizing can be either fixed-dollar or a dynamic percentage of account equity, making it appropriate for both small and large accounts.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">SMA + RSI</div>
+                <div class="m-label">Primary Strategy</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">Minute</div>
+                <div class="m-label">Timeframe</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="m-value">5%</div>
+                <div class="m-label">Take Profit</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div class="m-value">3%</div>
+                <div class="m-label">Risk Per Trade</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">15 min</div>
+                <div class="m-label">Cooldown Period</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+                <div class="m-value">2 Losses</div>
+                <div class="m-label">Max Consecutive</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>How the Strategy Works</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Market Hours Check</div>
+                        <div class="flow-desc">The bot verifies NYSE market hours (9:30 AM – 4:00 PM ET, weekdays only) before every cycle. If the market is closed, it sleeps and waits.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Cooldown &amp; Loss Protection</div>
+                        <div class="flow-desc">Before evaluating any symbol, the TradeTracker checks if the symbol is under cooldown (15 minutes post-exit) or if it has hit the maximum consecutive losses limit (2). If blocked, the symbol is skipped for new entries but still managed if a position is open.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Fetch OHLCV Data &amp; Calculate Indicators</div>
+                        <div class="flow-desc">Historical bar data is fetched from Alpaca's API. Two SMAs (SMA_X and SMA_Y, configurable periods) and RSI (default period 14) are calculated on the close price series.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Signal Generation</div>
+                        <div class="flow-desc">A <strong>BUY</strong> signal fires when the close price crosses above SMA_X on the most recent bar. A <strong>SELL</strong> signal fires when the close crosses below SMA_Y. RSI acts as a confirmation filter: buys are blocked if RSI &gt; 70 (overbought), sells are blocked if RSI &lt; 30 (oversold).</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Take Profit Check</div>
+                        <div class="flow-desc">For any open long position, the bot checks if the current unrealised P&amp;L has reached the configurable take-profit threshold (5%). If yes, the position is closed immediately via a market close order.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">6</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Dynamic Position Sizing</div>
+                        <div class="flow-desc">Trade size is computed as either a fixed dollar amount or a percentage of current account equity (3% default). This ensures the bot naturally scales with account growth or drawdown.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">7</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Order Execution &amp; Trade Logging</div>
+                        <div class="flow-desc">Buy orders are placed as market orders. Sell exits use trailing stop orders (trail = stop-loss %). On every iteration, the bot detects positions that disappeared (closed externally or via stop) and logs the P&amp;L to persist the trade history for future cooldown/loss checks.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Risk Management Framework</h3>
+            <div class="feature-list">
+                <div class="feature-item"><span class="fi-icon gold"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><div><strong>Trailing Stop-Loss:</strong> Sells use a trailing stop at 0.3% trail, locking in profits as price advances.</div></div>
+                <div class="feature-item"><span class="fi-icon red"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></span><div><strong>Cooldown Protection:</strong> 15-minute mandatory cooldown after every trade exit prevents revenge trading.</div></div>
+                <div class="feature-item"><span class="fi-icon red"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></span><div><strong>Consecutive Loss Guard:</strong> Trading halted for a symbol after 2 consecutive losses. Auto-resets on a win.</div></div>
+                <div class="feature-item"><span class="fi-icon green"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><strong>Take Profit:</strong> Positions closed at +5% unrealised profit to secure gains before reversal.</div></div>
+                <div class="feature-item"><span class="fi-icon green"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span><div><strong>Max Active Trades:</strong> Hard cap of 2 simultaneous positions across all symbols.</div></div>
+                <div class="feature-item"><span class="fi-icon green"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg></span><div><strong>Per-Stock Limit:</strong> Maximum of 1 open trade per symbol at any time.</div></div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Configuration Parameters</h3>
+            <table class="config-table">
+                <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="key-col">Symbols</td><td class="type-col">Array</td><td>NVDA, AAPL, TSLA</td><td>List of ticker symbols to trade.</td></tr>
+                    <tr><td class="key-col">MOVING_AVG_X / Y</td><td class="type-col">Integer</td><td>10 / 10</td><td>SMA periods for buy and sell crossover signals.</td></tr>
+                    <tr><td class="key-col">USE_RSI</td><td class="type-col">Boolean</td><td>true</td><td>Enable RSI as a confirming filter.</td></tr>
+                    <tr><td class="key-col">USE_PERCENTAGE_RISK</td><td class="type-col">Boolean</td><td>true</td><td>Use equity-based position sizing instead of fixed amount.</td></tr>
+                    <tr><td class="key-col">RISK_PERCENT</td><td class="type-col">Float</td><td>3.0</td><td>Percentage of account equity allocated per trade.</td></tr>
+                    <tr><td class="key-col">TAKE_PROFIT_PERCENT</td><td class="type-col">Float</td><td>5.0</td><td>Close position when unrealised P&L reaches this %.</td></tr>
+                    <tr><td class="key-col">COOLDOWN_MINUTES</td><td class="type-col">Integer</td><td>15</td><td>Minutes to wait between trades on the same symbol.</td></tr>
+                    <tr><td class="key-col">MAX_CONSECUTIVE_LOSSES</td><td class="type-col">Integer</td><td>2</td><td>Halt trading a symbol after this many consecutive losses.</td></tr>
+                    <tr><td class="key-col">STOP_LOSS_PERCENT</td><td class="type-col">Float</td><td>0.3</td><td>Trailing stop percentage applied to exit orders.</td></tr>
+                    <tr><td class="key-col">MAX_ACTIVE_TRADES</td><td class="type-col">Integer</td><td>2</td><td>Maximum concurrent open positions across all symbols.</td></tr>
+                    <tr><td class="key-col">Paper</td><td class="type-col">Integer</td><td>1</td><td>1 = Paper trading, 0 = Live trading.</td></tr>
+                    <tr><td class="key-col">timeframe</td><td class="type-col">String</td><td>Minute</td><td>Bar timeframe: Minute, Hour, or Day.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">alpaca-trade-api</span>
+                <span class="tag">ta (technical analysis)</span>
+                <span class="tag">pandas</span>
+                <span class="tag">SMAIndicator</span>
+                <span class="tag">RSIIndicator</span>
+                <span class="tag">JSON config</span>
+                <span class="tag">Persistent trade history</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 2 — ALPACA RSI BOT -->
+<div class="sep"></div>
+<div id="bot2">
+    <div class="section-header">
+        <div class="section-num">BOT 02 / ALPACA MARKETS</div>
+        <h2 class="section-title">Alpaca RSI Bot</h2>
+        <p class="section-tagline">A streamlined, clean implementation of a dual-SMA crossover strategy with an RSI momentum filter, supporting multiple symbols with configurable active trade and per-stock limits. Designed as a reliable, no-frills equity trading engine for Alpaca Markets.</p>
+        <div class="section-badges">
+            <span class="badge badge-cyan">SMA Crossover</span>
+            <span class="badge badge-gold">RSI Filter</span>
+            <span class="badge badge-green">Trailing Stop</span>
+            <span class="badge badge-blue">Short Selling</span>
+            <span class="badge badge-purple">Multi-Symbol</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>The Alpaca RSI Bot is the clean-room core version of the strategy, stripped of advanced features like the TradeTracker and dynamic position sizing, making it easier to read, audit, and extend. It shares the same SMA crossover logic and RSI filter but uses a fixed notional trade amount. It also supports short-selling when enabled, and exits long positions via trailing stop on a sell signal. This is the ideal starting point or template for customisation.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+                <div class="m-value">Fixed $</div>
+                <div class="m-label">Position Sizing</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></div>
+                <div class="m-value">Short ✓</div>
+                <div class="m-label">Short Selling</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">Minute</div>
+                <div class="m-label">Default TF</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="m-value">RSI 30–70</div>
+                <div class="m-label">Filter Range</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Strategy Overview</h3>
+            <p>The bot fetches OHLCV bar data for each symbol from Alpaca and calculates two SMAs (SMA_X for buy threshold and SMA_Y for sell threshold) along with RSI. A buy signal occurs when price crosses above SMA_X; a sell signal occurs when price crosses below SMA_Y. The RSI filter prevents buying into overbought conditions (RSI &gt; 70) and prevents shorting into oversold conditions (RSI &lt; 30).</p>
+            <p>On a sell signal with an open long position, rather than placing a plain sell, the bot places a <strong>trailing stop order</strong> to protect profits while giving the position room to continue if the trend resumes. Short selling is independently configurable — when enabled, sell signals without an open position will open a short.</p>
+        </div>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Entry Conditions</h4>
+                <ul>
+                    <li>Price crosses above SMA_X (buy signal)</li>
+                    <li>RSI must be below 70 (not overbought)</li>
+                    <li>Active trades below MAX_ACTIVE_TRADES</li>
+                    <li>Per-stock count below max_trades_per_stock</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Exit Conditions</h4>
+                <ul>
+                    <li>Price crosses below SMA_Y (sell signal)</li>
+                    <li>Exit via trailing stop order</li>
+                    <li>RSI below 30 blocks short entries</li>
+                    <li>Market hours: 9:30 AM – 4:00 PM ET</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">alpaca-trade-api</span>
+                <span class="tag">ta (technical analysis)</span>
+                <span class="tag">pandas</span>
+                <span class="tag">SMAIndicator</span>
+                <span class="tag">RSIIndicator</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 3 — ALPACA WEBSOCKET BOT -->
+<div class="sep"></div>
+<div id="bot3">
+    <div class="section-header">
+        <div class="section-num">BOT 03 / ALPACA MARKETS</div>
+        <h2 class="section-title">Alpaca WebSocket Bot</h2>
+        <p class="section-tagline">A real-time, event-driven trading bot that subscribes to Alpaca's WebSocket stream for live bar data. Implements a dip-buying strategy with automatic profit-threshold trailing stop activation and trade history logging to Excel.</p>
+        <div class="section-badges">
+            <span class="badge badge-cyan">WebSocket Streaming</span>
+            <span class="badge badge-gold">Dip Buy</span>
+            <span class="badge badge-green">Trailing Stop</span>
+            <span class="badge badge-blue">Auto-Reconnect</span>
+            <span class="badge badge-purple">Excel Logging</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>Unlike poll-based bots, this bot connects to Alpaca's IEX WebSocket stream (<code>wss://stream.data.alpaca.markets/v2/iex</code>) and reacts to bar events in real time. The strategy is elegantly simple: buy when price drops a configurable percentage below the last trade price (dip-buying), then activate a trailing stop once the position has reached a minimum profit threshold. All trade activity is logged and exported to an Excel spreadsheet for review. The WebSocket connection includes exponential backoff reconnection logic to handle network interruptions gracefully.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M7 6h10"/><path d="M6 7v10"/></svg></div>
+                <div class="m-value">WebSocket</div>
+                <div class="m-label">Data Source</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></div>
+                <div class="m-value">Dip Buy</div>
+                <div class="m-label">Entry Logic</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+                <div class="m-value">Backoff</div>
+                <div class="m-label">Reconnect</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">Excel</div>
+                <div class="m-label">Trade Log</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Strategy Logic</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Connect to WebSocket Stream</div>
+                        <div class="flow-desc">On startup, authenticates to Alpaca's data stream and subscribes to 1-minute bar updates for the configured symbol.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Dip Detection — Buy Signal</div>
+                        <div class="flow-desc">Every bar update is compared to the last trade fill price. If the current close is at or below <em>last_price × (1 − BUY_DROP_PERCENT)</em>, a market buy is placed.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Profit Threshold — Trailing Stop Activation</div>
+                        <div class="flow-desc">If the current price is at or above <em>last_price × (1 + PROFIT_THRESHOLD)</em>, a trailing stop sell order is placed to capture gains while allowing further upside.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Auto-Reconnect on Disconnect</div>
+                        <div class="flow-desc">On WebSocket close, the bot waits with exponential backoff (starting at 3 seconds, doubling up to 60 seconds) before reconnecting — but only within trading hours.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Excel Trade Log Export</div>
+                        <div class="flow-desc">Every buy and sell event is appended to a trade_history.xlsx file. If the file already exists, new rows are merged, maintaining a complete history.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box gold">
+            <div class="hb-label">Extended Trading Hours</div>
+            <p>This bot supports pre-market (4:00 AM) through after-hours (8:00 PM ET) trading, giving it an edge for reacting to overnight news and earnings events — broader coverage than standard 9:30–4:00 PM sessions.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">websocket-client</span>
+                <span class="tag">alpaca-trade-api</span>
+                <span class="tag">pandas</span>
+                <span class="tag">openpyxl</span>
+                <span class="tag">pytz</span>
+                <span class="tag">logging</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 4 — BINANCE NEW LISTING BOT -->
+<div class="sep"></div>
+<div id="bot4">
+    <div class="section-header">
+        <div class="section-num">BOT 04 / BINANCE</div>
+        <h2 class="section-title">Binance New Listing Bot</h2>
+        <p class="section-tagline">A market-discovery bot that continuously monitors Binance for newly listed trading pairs and automatically enters a position when a new coin is detected, targeting a 2× price target with a configurable stop-loss.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">New Listing</span>
+            <span class="badge badge-cyan">Auto-Discovery</span>
+            <span class="badge badge-green">2× Target</span>
+            <span class="badge badge-red">Stop Loss</span>
+            <span class="badge badge-blue">Spot Market</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>New coin listings on Binance are notorious for explosive price action in the first minutes and hours. This bot exploits that phenomenon by maintaining a snapshot of all known Binance symbols and polling periodically for additions. When a new pair matching the configured quote asset (e.g., USDT) appears, it buys immediately at market price, then enters a monitoring loop watching for either a <strong>2× price target</strong> or the configured stop-loss level. A persistent JSON file stores the known coin set across restarts so no listing is missed.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="m-value">Auto</div>
+                <div class="m-label">Discovery Mode</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="m-value">2×</div>
+                <div class="m-label">Price Target</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div class="m-value">Config %</div>
+                <div class="m-label">Stop Loss</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+                <div class="m-value">Polling</div>
+                <div class="m-label">Detection Mode</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Strategy Logic</h3>
+            <p>On first run, the bot fetches all current Binance tickers and saves them as the "seen" baseline. On every subsequent poll interval, it fetches all current tickers again and computes the difference (new coins = current − seen). Any new symbol matching the configured quote asset is immediately purchased at market price for the configured spend amount.</p>
+            <p>After purchasing, the bot tracks the coin in a dedicated monitoring loop, checking price every 10 seconds against the 2× target and stop-loss price. The moment either threshold is hit, a full market sell of the balance is placed. Trade logs are written to a local text file for audit purposes.</p>
+        </div>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Entry Logic</h4>
+                <ul>
+                    <li>Binance symbol not in known set</li>
+                    <li>Symbol ends with configured quote asset</li>
+                    <li>Buy at market for fixed spend amount</li>
+                    <li>Record buy price from fill data</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Exit Logic</h4>
+                <ul>
+                    <li>Price ≥ 2× entry price → full market sell</li>
+                    <li>Price ≤ stop-loss → full market sell</li>
+                    <li>Sell full available balance of base asset</li>
+                    <li>Log both buy and sell events</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight-box cyan">
+            <div class="hb-label">Testnet Ready</div>
+            <p>The bot is configured to point to the Binance testnet (<code>testnet.binance.vision</code>) by default, allowing safe strategy testing without real funds.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">python-binance</span>
+                <span class="tag">requests</span>
+                <span class="tag">JSON coin persistence</span>
+                <span class="tag">logging</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 5 — BINANCE RSI BOT -->
+<div class="sep"></div>
+<div id="bot5">
+    <div class="section-header">
+        <div class="section-num">BOT 05 / BINANCE FUTURES</div>
+        <h2 class="section-title">Binance RSI Futures Bot</h2>
+        <p class="section-tagline">A sophisticated multi-symbol Binance Futures screener that scans the top 500 coins by market capitalisation, filters for futures-eligible pairs, and uses RSI with support/resistance levels to identify high-probability long and short entries. Features a tiered take-profit system and a trailing stop-loss.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">RSI + S/R Levels</span>
+            <span class="badge badge-cyan">Top 500 Coins</span>
+            <span class="badge badge-red">Short Selling</span>
+            <span class="badge badge-green">3-Level TP</span>
+            <span class="badge badge-purple">CoinGecko Integration</span>
+            <span class="badge badge-blue">Futures Market</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This is one of the most ambitious bots in the portfolio. It begins by fetching the top 500 cryptocurrencies by market capitalisation from CoinGecko, then cross-references against all available Binance Futures symbols to build a filtered list of actionable USDT-margined perpetual contracts. For each symbol, it fetches 5-minute OHLCV data, calculates RSI(14), and identifies rolling 20-bar support and resistance levels. A LONG signal fires when RSI ≤ 30 and price is at or below support; a SHORT signal fires when RSI ≥ 70 and price is at or above resistance.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                <div class="m-value">Top 500</div>
+                <div class="m-label">Coins Scanned</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">RSI + S/R</div>
+                <div class="m-label">Signal Logic</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="m-value">3 Levels</div>
+                <div class="m-label">Take Profit</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">5m OHLCV</div>
+                <div class="m-label">Data Source</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+                <div class="m-value">+3/6/9%</div>
+                <div class="m-label">TP Levels (Long)</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div class="m-value">±3%</div>
+                <div class="m-label">Stop Loss</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Multi-Level Take Profit System</h3>
+            <p>When a trade is entered, three take-profit levels are set relative to the entry price. For a LONG trade: TP1 at +3%, TP2 at +6%, TP3 at +9%. For a SHORT: TP1 at −3%, TP2 at −6%, TP3 at −9%. At each TP level, a partial exit is taken (25%, 50%, 25% of position size respectively). After TP1 is hit, the stop-loss is moved to the TP1 level, creating a risk-free position going forward. This progressively locks in profits while keeping exposure for larger moves.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>CoinGecko Market Cap Filtering</h3>
+            <p>Rather than trading obscure low-liquidity coins, the bot only considers assets that rank in the top 500 by market capitalisation on CoinGecko. This ensures that even under high-frequency scanning, all traded coins have reasonable liquidity and genuine market activity. The CoinGecko API is queried in paginated batches of 250 coins with rate-limit handling.</p>
+        </div>
+
+        <div class="highlight-box red">
+            <div class="hb-label">Interactive Confirmation</div>
+            <p>When a trade signal is detected, the bot prompts the user with the symbol, direction, and entry price before placing the order. This safety check prevents unintended automated trades and keeps the operator in control of every execution.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">python-binance</span>
+                <span class="tag">ccxt</span>
+                <span class="tag">requests (CoinGecko)</span>
+                <span class="tag">pandas</span>
+                <span class="tag">numpy</span>
+                <span class="tag">Futures Sandbox</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 6 — BINANCE MTF BOT WITH UI -->
+<div class="sep"></div>
+<div id="bot6">
+    <div class="section-header">
+        <div class="section-num">BOT 06 / BINANCE FUTURES</div>
+        <h2 class="section-title">Binance Multi-Timeframe Bot with Dashboard</h2>
+        <p class="section-tagline">The most complete and production-ready system in the portfolio. A dual-timeframe Binance Futures bot combining Supertrend, MACD, and EMA for trend confirmation on the 15-minute chart, with precise 1-minute entries using MACD crossover, StochRSI, and RSI bounces — all controlled via a Streamlit web dashboard with integrated backtesting.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">Supertrend</span>
+            <span class="badge badge-cyan">MACD</span>
+            <span class="badge badge-green">EMA Crossover</span>
+            <span class="badge badge-red">StochRSI</span>
+            <span class="badge badge-purple">ATR Stop Loss</span>
+            <span class="badge badge-blue">Streamlit Dashboard</span>
+            <span class="badge badge-cyan">Backtesting Engine</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This system represents the apex of complexity in the trading bot portfolio. It implements a classic <strong>multi-timeframe (MTF)</strong> methodology where a higher timeframe (15m) determines macro trend bias and a lower timeframe (1m) provides precise entry timing. The bot ships with a complete Streamlit web interface enabling one-click backtests on historical data, a live bot control panel with start/stop functionality, real-time log streaming, and a market analysis panel that populates once the bot has fetched its initial data.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">15m + 1m</div>
+                <div class="m-label">Dual Timeframe</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="m-value">Streamlit</div>
+                <div class="m-label">Dashboard</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l4 10-6 3-4-10z"/><path d="M6 15l-4 7h16"/><line x1="12" y1="22" x2="12" y2="15"/></svg></div>
+                <div class="m-value">50 Days</div>
+                <div class="m-label">Backtest Window</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <div class="m-value">10×</div>
+                <div class="m-label">Default Leverage</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="m-value">ATR ×1.5</div>
+                <div class="m-label">Stop Loss</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+                <div class="m-value">5 sec</div>
+                <div class="m-label">Poll Interval</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>15-Minute Trend Confirmation (Higher Timeframe)</h3>
+            <p>The 15m chart acts as the gatekeeper. Three indicators must confirm trend direction before the bot will look for 1m entries:</p>
+            <div class="feature-list">
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span><div><strong>Supertrend:</strong> A volatility-adjusted trend indicator that switches between bullish and bearish signals based on ATR bands. Must align with trade direction.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><div><strong>MACD Histogram:</strong> The MACD histogram must be positive for longs and negative for shorts, confirming momentum direction on the higher timeframe.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span><div><strong>EMA Crossover (20/50):</strong> The fast EMA (20) must be above the slow EMA (50) for bullish bias, and below for bearish bias.</div></div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>1-Minute Entry Triggers (Lower Timeframe)</h3>
+            <p>Once the 15m confirms the macro bias, the bot scans the 1m chart for precision entry signals:</p>
+            <div class="feature-list">
+                <div class="feature-item"><span class="fi-icon green"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><strong>MACD Crossover:</strong> A bullish MACD crossover on the 1m for long entries, bearish crossover for shorts.</div></div>
+                <div class="feature-item"><span class="fi-icon green"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><strong>StochRSI Exit:</strong> StochRSI exiting oversold territory (crossing above 20) for longs; exiting overbought (crossing below 80) for shorts.</div></div>
+                <div class="feature-item"><span class="fi-icon green"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><strong>RSI Bounce:</strong> RSI bouncing from key levels (e.g., 30–40 for longs) confirms momentum alignment before entry.</div></div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Risk Management</h3>
+            <p><strong>ATR-Based Stop Loss:</strong> The stop-loss distance is calculated dynamically using the Average True Range (ATR × 1.5 multiplier). This adapts the stop to current market volatility — wider stops in volatile conditions, tighter in quiet markets.</p>
+            <p><strong>Equity-Based Position Sizing:</strong> Each trade risks a configurable fixed percentage of account balance (RISK_PER_TRADE parameter), ensuring consistent risk regardless of account size or price level.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Streamlit Dashboard Features</h3>
+            <div class="feature-list">
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span><div><strong>Backtesting Tab:</strong> Enter any symbol, click "Run Backtest" — results include equity curve chart, trade P&L chart, and a full trade log table.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg></span><div><strong>Live Bot Control:</strong> Start/Stop the bot with a single button click. Real-time log output streams directly to the dashboard.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></span><div><strong>Market Analysis Panel:</strong> Live indicator readings, current trend bias, and engine status displayed once bot is running.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><div><strong>Safety First:</strong> Defaults to Binance Testnet. Live trading requires an explicit environment variable override, preventing accidental live orders.</div></div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">python-binance</span>
+                <span class="tag">streamlit</span>
+                <span class="tag">pandas</span>
+                <span class="tag">numpy</span>
+                <span class="tag">matplotlib</span>
+                <span class="tag">Supertrend</span>
+                <span class="tag">MACD</span>
+                <span class="tag">StochRSI</span>
+                <span class="tag">ATR</span>
+                <span class="tag">python-dotenv</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 7 — BYBIT GRID BOT -->
+<div class="sep"></div>
+<div id="bot7">
+    <div class="section-header">
+        <div class="section-num">BOT 07 / BYBIT</div>
+        <h2 class="section-title">Bybit Grid Trading Bot</h2>
+        <p class="section-tagline">A dynamic grid trading engine for Bybit's Unified Trading API (linear perpetuals). Generates a configurable grid of price levels around the entry price and places limit orders at each level as the price crosses grid boundaries, enabling systematic profit capture in ranging or trending markets.</p>
+        <div class="section-badges">
+            <span class="badge badge-red">Grid Trading</span>
+            <span class="badge badge-cyan">Limit Orders</span>
+            <span class="badge badge-gold">Configurable Leverage</span>
+            <span class="badge badge-green">TP &amp; SL Per Order</span>
+            <span class="badge badge-purple">Linear Perpetuals</span>
+            <span class="badge badge-blue">Testnet &amp; Live</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>Grid trading is a market-neutral strategy that places buy and sell limit orders at regular price intervals above and below the current price. This Bybit implementation generates a dynamic grid around the bot's startup price using configurable range and level count parameters. As the price moves through the grid, the bot detects crossings and places new limit orders with individual stop-loss and take-profit targets. The strategy profits from back-and-forth price oscillation — common in sideways or low-volatility markets.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div>
+                <div class="m-value">Dynamic</div>
+                <div class="m-label">Grid Generation</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg></div>
+                <div class="m-value">10 Levels</div>
+                <div class="m-label">Default Grid Size</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <div class="m-value">Config</div>
+                <div class="m-label">Leverage Setting</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="m-value">Per Order</div>
+                <div class="m-label">TP &amp; SL</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+                <div class="m-value">5 sec</div>
+                <div class="m-label">Polling Interval</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M15 9H9a2 2 0 0 0 0 4h6a2 2 0 0 1 0 4H9"/></svg></div>
+                <div class="m-value">GTC</div>
+                <div class="m-label">Order Type</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Grid Generation Algorithm</h3>
+            <p>At startup, the bot fetches the current market price as the "start price." From there, it generates an equal number of grid levels above and below the mid-price. The step size between levels is computed as:</p>
+            <div class="code-block">
+step_size = (GRID_RANGE_MAX - GRID_RANGE_MIN) / (GRID_LEVELS - 1)
+
+upper_grid = [mid * (1 + (GRID_RANGE_MIN + i * step) / 100) <span class="kw">for</span> i <span class="kw">in</span> range(<span class="num">5</span>)]
+lower_grid = [mid * (1 - (GRID_RANGE_MIN + i * step) / 100) <span class="kw">for</span> i <span class="kw">in</span> range(<span class="num">5</span>)]
+grid = sorted(upper_grid + lower_grid)
+            </div>
+            <p>The resulting 10 levels span symmetrically around the current price, creating buy zones below and sell zones above.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Order Placement Logic</h3>
+            <p>In the main monitoring loop (5-second poll), the bot compares current price to the previous cycle's price. When the price crosses a grid level upward (previous price &lt; grid level ≤ current price), a LONG limit order is placed at that level. When price crosses downward, a SHORT limit order is placed. Each order includes individual TP and SL prices calculated from configurable percentages.</p>
+        </div>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Upward Crossing</h4>
+                <ul>
+                    <li>Price crosses grid level from below</li>
+                    <li>Place BUY limit at grid price</li>
+                    <li>TP = grid_price × (1 + TP_PERCENT)</li>
+                    <li>SL = grid_price × (1 − SL_PERCENT)</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Downward Crossing</h4>
+                <ul>
+                    <li>Price crosses grid level from above</li>
+                    <li>Place SELL limit at grid price</li>
+                    <li>TP = grid_price × (1 − TP_PERCENT)</li>
+                    <li>SL = grid_price × (1 + SL_PERCENT)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">pybit</span>
+                <span class="tag">Unified Trading HTTP Session</span>
+                <span class="tag">logging</span>
+                <span class="tag">JSON config</span>
+                <span class="tag">Linear Perpetuals</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 8 — IG BROKER BOT -->
+<div class="sep"></div>
+<div id="bot8">
+    <div class="section-header">
+        <div class="section-num">BOT 08 / IG BROKER</div>
+        <h2 class="section-title">IG Broker Five-Indicator Bot</h2>
+        <p class="section-tagline">A sophisticated CFD/forex trading bot for IG Markets. Uses five independent technical strategies — RSI, EMA crossover, Bollinger Band breakout, Stochastic oscillator reversal, and Bollinger Band bounce — and generates a trade signal only when at least 3 of 5 strategies agree, creating a high-confidence consensus-based entry system.</p>
+        <div class="section-badges">
+            <span class="badge badge-cyan">5-Indicator Consensus</span>
+            <span class="badge badge-gold">RSI</span>
+            <span class="badge badge-green">EMA Crossover</span>
+            <span class="badge badge-red">Bollinger Bands</span>
+            <span class="badge badge-purple">Stochastic</span>
+            <span class="badge badge-blue">IG Markets API</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This bot connects to IG Markets via the <code>trading_ig</code> Python library and trades any instrument via its EPIC identifier (e.g., Forex, Indices, Commodities). The defining feature is its consensus-based signal system: five distinct technical strategies each vote independently, and a trade is only executed when the majority (≥ 3 of 5) agree on direction. This dramatically reduces false signals and noise while maintaining responsiveness to genuine market moves. Historical data is cached daily to a CSV file for efficiency.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9"/><path d="M3 19h18"/></svg></div>
+                <div class="m-value">3 of 5</div>
+                <div class="m-label">Consensus Required</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">5</div>
+                <div class="m-label">Indicators</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14h6"/><path d="M9 18h6"/><path d="M9 10h6"/></svg></div>
+                <div class="m-value">210 pts</div>
+                <div class="m-label">Historical Data</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                <div class="m-value">Any EPIC</div>
+                <div class="m-label">Instrument</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">Config</div>
+                <div class="m-label">Poll Interval</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <div class="m-value">Demo/Live</div>
+                <div class="m-label">Account Mode</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>The Five Strategies Explained</h3>
+            <div class="feature-list">
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></span><div><strong>1. Momentum (RSI):</strong> Generates a BUY vote when RSI(14) &lt; 30 (oversold) and a SELL vote when RSI &gt; 70 (overbought). Classic momentum reversal.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span><div><strong>2. Moving Average Crossover (EMA-20):</strong> BUY when price is above EMA(20); SELL when price is below. Trend-following component.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg></span><div><strong>3. Breakout (Bollinger Bands):</strong> BUY when close breaks above the upper Bollinger Band; SELL when it breaks below the lower band. Momentum breakout strategy.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span><div><strong>4. Reversal (Stochastic Oscillator):</strong> BUY when Stochastic(14,3) &lt; 20 (oversold); SELL when Stochastic &gt; 80 (overbought). Mean-reversion component.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><div><strong>5. Bollinger Band Bounce:</strong> BUY when price touches or crosses below the lower band then bounces back above it; SELL on bounce from upper band. Precise reversal signal.</div></div>
+            </div>
+        </div>
+
+        <div class="highlight-box green">
+            <div class="hb-label">Consensus Logic</div>
+            <p>Each strategy independently computes a boolean vote (True/False) for buy and sell direction. These five votes are summed: if the sum ≥ 3, the corresponding signal is fired. This ensures no single noisy indicator can cause a false entry — the market must be genuinely aligned across multiple analytical frameworks.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Data Caching System</h3>
+            <p>Historical price data (210 data points) is fetched from IG Markets and cached to a daily CSV file named <code>historicalData_YYYY-MM-DD.csv</code>. On subsequent runs within the same day, the bot reads from the cache instead of making a live API call, reducing API usage and improving startup speed. The current market price is always fetched live to append to the historical dataset for indicator calculation.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">trading-ig</span>
+                <span class="tag">ta (technical analysis)</span>
+                <span class="tag">pandas</span>
+                <span class="tag">numpy</span>
+                <span class="tag">RSIIndicator</span>
+                <span class="tag">MACD</span>
+                <span class="tag">EMAIndicator</span>
+                <span class="tag">BollingerBands</span>
+                <span class="tag">StochasticOscillator</span>
+                <span class="tag">logging</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 9 — TASTYTRADE OPTIONS BOT -->
+<div class="sep"></div>
+<div id="bot9">
+    <div class="section-header">
+        <div class="section-num">BOT 09 / TASTYTRADE</div>
+        <h2 class="section-title">TastyTrade Options Bot</h2>
+        <p class="section-tagline">An advanced options trading system for TastyTrade, implementing an Iron Condor / Credit Spread strategy on SPX (S&amp;P 500 Index) options. Streams real-time option quotes via DXLink, identifies optimal ATM credit spreads by maximising extrinsic value, and automatically places 0-DTE (zero days to expiration) iron condor orders at a configured execution time.</p>
+        <div class="section-badges">
+            <span class="badge badge-purple">Iron Condor</span>
+            <span class="badge badge-cyan">Credit Spreads</span>
+            <span class="badge badge-gold">SPX Options</span>
+            <span class="badge badge-green">0-DTE Strategy</span>
+            <span class="badge badge-red">DXLink Streaming</span>
+            <span class="badge badge-blue">Extrinsic Optimiser</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This is the most architecturally complex bot in the portfolio, involving multiple cooperating Python modules and asynchronous programming (<code>asyncio</code>). The strategy targets <strong>0-DTE SPX options</strong> — options expiring the same day they are traded — using an iron condor structure (short call spread + short put spread). The bot streams live option chain quotes via TastyTrade's DXLink WebSocket API, computes extrinsic value for all near-the-money strikes, identifies the optimal short/long combination for both the call and put spreads, and places orders at a pre-configured execution time each day.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+                <div class="m-value">Iron Condor</div>
+                <div class="m-label">Strategy Type</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+                <div class="m-value">0-DTE</div>
+                <div class="m-label">Options Expiry</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div class="m-value">$0.10</div>
+                <div class="m-label">Min Credit Threshold</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M6 6V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="10" y1="12" x2="10.01" y2="12"/><line x1="14" y1="12" x2="14.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/></svg></div>
+                <div class="m-value">$10 Wide</div>
+                <div class="m-label">Spread Width</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <div class="m-value">DXLink</div>
+                <div class="m-label">Streaming API</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">Timed</div>
+                <div class="m-label">Execution Model</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Architecture — Module Breakdown</h3>
+            <div class="feature-list">
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M6 6V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg></span><div><strong>OptionsExchange (Abstract Base):</strong> Defines the interface for any options exchange connection — methods for option chain retrieval, ATM option selection, quote fetching, underlying price, and order placement.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-12 0V8z"/></svg></span><div><strong>TastyTrade (Implementation):</strong> Concrete implementation of OptionsExchange for the TastyTrade API. Handles DXLink WebSocket quote streaming, ATM option selection (3 strikes above/below current price), and order placement for credit spread legs.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="16" y2="18"/></svg></span><div><strong>OptimalTrade (Strategy Engine):</strong> The core strategy logic. Computes extrinsic value for each option, finds the highest-extrinsic short leg within ±$5 of ATM, and pairs it with a $10-wide protection leg. Displays a live options table in the terminal.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span><div><strong>LivePrices (Price Streaming):</strong> Handles real-time underlying price subscriptions via DXLink for accurate Greeks and moneyness calculations.</div></div>
+                <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><div><strong>bot.py (Backtest Engine):</strong> Simulates the iron condor strategy against historical option data, calculating daily P&L for put and call spreads, logging results to CSV.</div></div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Extrinsic Value Optimisation</h3>
+            <p>The strategy's edge comes from collecting extrinsic (time) value at the optimal strike. For each near-ATM option, the bot calculates:</p>
+            <div class="code-block">
+<span class="cm"># For a CALL option:</span>
+intrinsic = max(0, current_price - strike_price)
+extrinsic = max(0, bid_price - intrinsic)
+
+<span class="cm"># For a PUT option:</span>
+intrinsic = max(0, strike_price - current_price)
+extrinsic = max(0, bid_price - intrinsic)
+            </div>
+            <p>The short leg is chosen as the strike with the highest extrinsic value within ±$5 of ATM. This ensures maximum premium collection while staying near the money.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">tastytrade SDK</span>
+                <span class="tag">DXLink WebSocket</span>
+                <span class="tag">asyncio</span>
+                <span class="tag">tabulate</span>
+                <span class="tag">decimal</span>
+                <span class="tag">SPX Options Chain</span>
+                <span class="tag">Iron Condor</span>
+                <span class="tag">CSV backtesting</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOT 10 — STOCK PRICES -->
+<div class="sep"></div>
+<div id="bot10">
+    <div class="section-header">
+        <div class="section-num">MODULE 10 / POLYGON.IO</div>
+        <h2 class="section-title">Stock Price Data Fetcher</h2>
+        <p class="section-tagline">A utility module that connects to the Polygon.io market data API to download clean, adjusted daily OHLCV (Open, High, Low, Close, Volume) data for any list of symbols and saves each to a structured CSV file — essential for backtesting, research, and external data pipelines.</p>
+        <div class="section-badges">
+            <span class="badge badge-blue">Polygon.io API</span>
+            <span class="badge badge-cyan">OHLCV Export</span>
+            <span class="badge badge-green">Adjusted Prices</span>
+            <span class="badge badge-gold">Multi-Symbol</span>
+            <span class="badge badge-purple">CSV Output</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>While not a live trading bot, this module is a critical piece of the data infrastructure underpinning backtesting and strategy research. It uses Polygon.io's aggregates endpoint to fetch split/dividend-adjusted daily bars for any list of symbols between a configurable start date and today. Output is clean, properly named CSV files ready for consumption by any analysis tool or backtesting framework.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <div class="m-value">Polygon.io</div>
+                <div class="m-label">Data Source</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">Daily</div>
+                <div class="m-label">Bar Resolution</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                <div class="m-value">Adjusted</div>
+                <div class="m-label">Price Type</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="m-value">CSV</div>
+                <div class="m-label">Output Format</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Data Pipeline</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Load Config</div>
+                        <div class="flow-desc">Reads symbol list, API key, and start date from config.json. End date is automatically set to today.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Fetch from Polygon.io</div>
+                        <div class="flow-desc">Calls the <code>/v2/aggs/ticker/{symbol}/range/1/day/{from}/{to}</code> endpoint with <code>adjusted=true</code> and sorted ascending.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Clean &amp; Structure</div>
+                        <div class="flow-desc">Parses results into a pandas DataFrame, converts UNIX timestamps to human-readable dates, drops raw columns, and renames to standard OHLC format.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Export to CSV</div>
+                        <div class="flow-desc">Saves as <code>{symbol}_data.csv</code> in the same directory. Columns: Date, Open, Close, Low, High.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">requests</span>
+                <span class="tag">pandas</span>
+                <span class="tag">Polygon.io REST API</span>
+                <span class="tag">JSON config</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TECHNOLOGIES OVERVIEW ===== -->
+<div class="sep"></div>
+<div style="padding: 60px 60px; background: var(--navy-mid);">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--cyan); text-transform: uppercase; margin-bottom: 12px;">Technology Stack</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; margin-bottom: 16px;">Platforms &amp; Brokers</h2>
+        <p style="color: var(--grey); font-size: 15px; margin-bottom: 40px; max-width: 700px; line-height: 1.7;">Our trading systems are built on a multi-broker, multi-asset foundation, enabling diversification of both strategy and infrastructure risk.</p>
+
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
+                <div class="m-value" style="font-size:16px;">Alpaca Markets</div>
+                <div class="m-label" style="font-size:10px;">US Equities &amp; Crypto — Paper &amp; Live</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+                <div class="m-value" style="font-size:16px;">Binance</div>
+                <div class="m-label" style="font-size:10px;">Spot &amp; Futures — Testnet &amp; Live</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M15 9H9a2 2 0 0 0 0 4h6a2 2 0 0 1 0 4H9"/></svg></div>
+                <div class="m-value" style="font-size:16px;">Bybit</div>
+                <div class="m-label" style="font-size:10px;">Linear Perpetual Futures</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value" style="font-size:16px;">IG Markets</div>
+                <div class="m-label" style="font-size:10px;">CFDs — Forex, Indices, Commodities</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+                <div class="m-value" style="font-size:16px;">TastyTrade</div>
+                <div class="m-label" style="font-size:10px;">Options — SPX, Equities</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <div class="m-value" style="font-size:16px;">Polygon.io</div>
+                <div class="m-label" style="font-size:10px;">Market Data &amp; Research</div>
+            </div>
+        </div>
+
+        <hr class="fancy">
+
+        <h3 style="font-size: 17px; color: var(--cyan); font-weight: 700; margin-bottom: 20px;">Core Python Libraries</h3>
+        <div class="tags-row" style="margin-bottom: 24px;">
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">Python 3.8+</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">pandas</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">numpy</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">ta (Technical Analysis)</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">ccxt</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">websocket-client</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">asyncio</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">streamlit</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">matplotlib</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">requests</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">python-binance</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">pybit</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">tastytrade SDK</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">trading-ig</span>
+            <span class="tag" style="font-size:13px; padding: 6px 14px;">alpaca-trade-api</span>
+        </div>
+
+        <h3 style="font-size: 17px; color: var(--cyan); font-weight: 700; margin-bottom: 20px;">Strategy Types Implemented</h3>
+        <div class="feature-list">
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span><strong>Trend Following:</strong> SMA/EMA crossovers, Supertrend</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span><strong>Mean Reversion:</strong> RSI extremes, Stochastic oversold/overbought</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg></span><strong>Breakout:</strong> Bollinger Band breakout, support/resistance</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span><strong>Grid Trading:</strong> Range-based systematic limit order placement</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><strong>Multi-Timeframe:</strong> Higher TF bias + lower TF precision entries</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><strong>Options:</strong> Iron condor / credit spreads on 0-DTE index options</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><strong>Event-Driven:</strong> New listing detection and momentum buying</div>
+            <div class="feature-item"><span class="fi-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span><strong>Real-Time:</strong> WebSocket-driven dip-buy with profit trailing</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== FUTURE BOTS ===== -->
+<div class="sep"></div>
+<div class="final-section">
+    <h2 style="position:relative; z-index:2;">We're Always Building <span class="gradient-text">More</span></h2>
+    <p style="position:relative; z-index:2;">Our portfolio of algorithmic trading systems is constantly growing. Beyond the bots documented here, we are actively developing and researching additional automated strategies across new asset classes, exchanges, and quantitative approaches.</p>
+
+    <div class="future-bots-grid">
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V6a3 3 0 0 1 6 0v5"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg></div>
+            <div class="fb-title">ML Prediction Bot</div>
+            <div class="fb-desc">Machine learning price prediction using LSTM and transformer models for signal generation.</div>
+            <div class="fb-status">In Research</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <div class="fb-title">HFT Scalping Bot</div>
+            <div class="fb-desc">High-frequency market microstructure strategies targeting sub-second order book imbalances.</div>
+            <div class="fb-status">Planned</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="fb-title">Cross-Exchange Arbitrage</div>
+            <div class="fb-desc">Real-time price discrepancy detection and simultaneous execution across multiple exchanges.</div>
+            <div class="fb-status">Planned</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></div>
+            <div class="fb-title">Sentiment NLP Bot</div>
+            <div class="fb-desc">News and social media sentiment analysis to drive long/short signals on crypto and equities.</div>
+            <div class="fb-status">In Research</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></div>
+            <div class="fb-title">Schwab / TD Bot</div>
+            <div class="fb-desc">Extending our framework to Charles Schwab's thinkorswim API for US retail brokerage integration.</div>
+            <div class="fb-status">Planned</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+            <div class="fb-title">Portfolio Rebalancer</div>
+            <div class="fb-desc">Automated portfolio rebalancing system maintaining target asset allocations across multiple brokers.</div>
+            <div class="fb-status">In Development</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+            <div class="fb-title">DeFi / On-Chain Bot</div>
+            <div class="fb-desc">Decentralised exchange strategies including liquidity provision, yield optimisation, and MEV.</div>
+            <div class="fb-status">In Research</div>
+        </div>
+        <div class="future-bot-card">
+            <div class="fb-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="fb-title">Futures Spread Bot</div>
+            <div class="fb-desc">Calendar spread and inter-commodity spread trading on CME and other regulated futures markets.</div>
+            <div class="fb-status">Planned</div>
+        </div>
+    </div>
+
+    <div style="position:relative; z-index:2; border: 1px solid rgba(0,212,255,0.2); border-radius: 16px; padding: 32px 40px; max-width: 700px; margin: 0 auto; background: rgba(5,9,26,0.6); backdrop-filter: blur(8px);">
+        <div style="font-size: 13px; color: var(--grey); line-height: 1.8;">
+            <strong style="color: var(--white); font-size: 16px; display: block; margin-bottom: 10px;">Continuous Innovation</strong>
+            We approach algorithmic trading as a living discipline — constantly refining existing strategies, exploring new market opportunities, and building the infrastructure to support scalable, robust automated trading across global markets. Every bot in this document is a foundation for the next iteration.
+        </div>
+    </div>
+
+    <div style="position:relative; z-index:2; margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border); color: var(--grey); font-size: 12px; letter-spacing: 0.08em;">
+        Algorithmic Trading Systems Documentation &nbsp;·&nbsp; Python &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; Confidential
+    </div>
+</div>
+
+<!-- ===== PROJECT LINKS ===== -->
+<div class="sep"></div>
+<div style="padding: 60px 60px; background: var(--navy-mid);">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <section class="project-links-section">
+            <h2 class="section-heading">Project Resources</h2>
+            <div class="links-grid single-link">
+                <a href="https://drive.google.com/file/d/1BW0bOzTzoadRyXbGC-d8-2W4G4gmchHm/view?usp=drive_link"
+                   target="_blank" rel="noopener" class="project-link-card doc-card">
+                    <div class="link-card-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                    </div>
+                    <div class="link-card-body">
+                        <div class="link-card-label">Documentation</div>
+                        <div class="link-card-title">Technical Documentation</div>
+                        <div class="link-card-desc">Full PDF — 10+ trading bots, strategies, risk controls, and multi-broker integrations</div>
+                    </div>
+                    <div class="link-card-arrow">→</div>
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+</body>
+</html>

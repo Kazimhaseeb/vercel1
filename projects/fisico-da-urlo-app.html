@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisico Da Urlo — Gym Attendance App | QuantStack</title>
+    <meta name="description" content="Fisico Da Urlo: Flutter gym attendance app with QR check-in, FastAPI backend, MySQL — iOS & Android. Pairs with React admin panel.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+    <style>
+        .gallery-section { margin-top: 56px; }
+        .gallery-main {
+            border-radius: 14px; overflow: hidden;
+            border: 1px solid rgba(0,230,118,0.3);
+            box-shadow: 0 28px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,230,118,0.08);
+            margin-top: 20px; transition: box-shadow 0.35s;
+            background: linear-gradient(180deg, #0d1535 0%, #0a1f18 100%);
+        }
+        .gallery-main:hover { box-shadow: 0 36px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(0,230,118,0.25); }
+        .gallery-device-bar {
+            background: #141830; padding: 10px 16px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .device-label {
+            flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px;
+            padding: 4px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--grey);
+        }
+        .gallery-phone-stage {
+            display: flex; justify-content: center; align-items: center;
+            padding: 32px 24px 28px; min-height: 520px;
+        }
+        .gallery-main-img {
+            width: auto; max-width: min(300px, 42vw); max-height: 560px;
+            display: block; cursor: pointer; border-radius: 28px;
+            border: 3px solid rgba(0,230,118,0.35);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 40px rgba(0,230,118,0.1);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .gallery-main-img:hover { transform: scale(1.01); }
+        .gallery-caption {
+            background: rgba(5,9,26,0.85); border-top: 1px solid rgba(0,230,118,0.12);
+            padding: 12px 20px; font-size: 12px; color: var(--grey);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .gallery-caption .fig-label {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+            color: var(--green); letter-spacing: 0.1em; text-transform: uppercase;
+            background: rgba(0,230,118,0.12); border: 1px solid rgba(0,230,118,0.25);
+            border-radius: 4px; padding: 2px 8px; flex-shrink: 0;
+        }
+        .gallery-strip {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 10px; margin-top: 14px;
+        }
+        .gallery-thumb {
+            border-radius: 10px; overflow: hidden; border: 2px solid transparent;
+            cursor: pointer; transition: all 0.22s ease; position: relative;
+            background: #0a1f18; aspect-ratio: 9/16; max-height: 140px;
+        }
+        .gallery-thumb img {
+            width: 100%; height: 100%; object-fit: cover; object-position: top center;
+            opacity: 0.55; transition: opacity 0.22s;
+        }
+        .gallery-thumb:hover img { opacity: 0.85; }
+        .gallery-thumb:hover { border-color: rgba(0,230,118,0.45); }
+        .gallery-thumb.active { border-color: var(--green); }
+        .gallery-thumb.active img { opacity: 1; }
+        .thumb-label {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(5,9,26,0.95));
+            padding: 18px 4px 5px; font-size: 8px; font-weight: 700;
+            color: var(--grey); text-align: center; letter-spacing: 0.05em; text-transform: uppercase;
+        }
+        .gallery-thumb.active .thumb-label { color: var(--green); }
+        @media (max-width: 800px) {
+            .gallery-strip { grid-template-columns: repeat(3, 1fr); }
+            .gallery-phone-stage { min-height: 440px; padding: 20px; }
+        }
+        .project-links-section { margin-top: 56px; }
+        .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+        .project-link-card {
+            display: flex; align-items: center; gap: 18px; padding: 24px 28px;
+            border-radius: 14px; border: 1px solid; text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .project-link-card:hover { transform: translateY(-4px); }
+        .project-link-card.doc-card { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+        .project-link-card.doc-card:hover { border-color: rgba(245,166,35,0.6); box-shadow: 0 12px 40px rgba(245,166,35,0.15); }
+        .project-link-card.demo-card { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+        .project-link-card.demo-card:hover { border-color: rgba(0,212,255,0.6); box-shadow: 0 12px 40px rgba(0,212,255,0.15); }
+        .link-card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .doc-card .link-card-icon { background: rgba(245,166,35,0.12); border: 1px solid rgba(245,166,35,0.2); }
+        .demo-card .link-card-icon { background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.2); }
+        .link-card-body { flex: 1; }
+        .link-card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+        .doc-card .link-card-label { color: var(--gold); }
+        .demo-card .link-card-label { color: var(--cyan); }
+        .link-card-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .link-card-desc { font-size: 12px; color: var(--grey); }
+        .link-card-arrow { font-size: 20px; transition: transform 0.2s; }
+        .doc-card .link-card-arrow { color: var(--gold); }
+        .demo-card .link-card-arrow { color: var(--cyan); }
+        .project-link-card:hover .link-card-arrow { transform: translateX(4px); }
+        @media (max-width: 640px) { .links-grid { grid-template-columns: 1fr; } }
+        .flow-num.green-gradient { background: linear-gradient(135deg, var(--green), #69f0ae); }
+        .ecosystem-banner {
+            margin-top: 20px; padding: 16px 20px; border-radius: 12px;
+            border: 1px solid rgba(0,212,255,0.25); background: rgba(0,212,255,0.06);
+            font-size: 13px; color: #c8d3f5; line-height: 1.6;
+        }
+        .ecosystem-banner a { color: var(--cyan); font-weight: 600; text-decoration: none; }
+        .ecosystem-banner a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <a href="flutter.html" class="nav-project-label" style="text-decoration:none;color:var(--grey);">Mobile · Project 02</a>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(0,230,118,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.10) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Project 02</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-green-pill">FLUTTER · GYM APP</span>
+        </div>
+        <h1 class="hero-title">Fisico Da Urlo<br><span class="gradient-green">Member App</span></h1>
+        <p class="hero-sub">A QR-based gym attendance mobile app built with Flutter — members scan their unique code for instant check-in and check-out, with real-time sync to the FastAPI backend and React admin panel. Published on Google Play and the Apple App Store.</p>
+        <div class="hero-tags">
+            <span class="htag">Flutter</span>
+            <span class="htag">Dart</span>
+            <span class="htag">FastAPI</span>
+            <span class="htag">MySQL</span>
+            <span class="htag">QR Codes</span>
+            <span class="htag">Aruba CMP</span>
+            <span class="htag">REST APIs</span>
+        </div>
+    </div>
+</header>
+
+<main class="proj-main">
+
+    <div class="metrics-strip">
+        <div class="metric"><div class="m-val" style="color:#00e676;">QR</div><div class="m-lbl">Check-In</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">5</div><div class="m-lbl">Core Screens</div></div>
+        <div class="metric"><div class="m-val" style="color:#00e676;">Live</div><div class="m-lbl">Attendance Sync</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">iOS+Android</div><div class="m-lbl">One Codebase</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">FastAPI</div><div class="m-lbl">Backend</div></div>
+        <div class="metric"><div class="m-val" style="color:#b46aff;">HTTPS</div><div class="m-lbl">REST API</div></div>
+    </div>
+
+    <section class="section">
+        <div class="overview-card" style="--accent: var(--green);">
+            <p>
+                <strong>Fisico Da Urlo</strong> is a custom QR-based attendance management system for gyms. Members scan a unique QR code to instantly record check-in and check-out — eliminating paper registers and reducing queues at the entrance.
+            </p>
+            <p style="margin-top: 14px;">
+                The Flutter app connects to a <strong>Python FastAPI</strong> backend on Aruba CMP with a shared <strong>MySQL</strong> database. It works as the member-facing half of the full Fisico ecosystem, alongside the <a href="fisico-da-urlo.html" style="color:var(--cyan);font-weight:600;">React.js admin panel</a> used by gym staff for member CRUD and attendance oversight.
+            </p>
+        </div>
+        <div class="ecosystem-banner">
+            Part of the <strong>Fisico Da Urlo ecosystem</strong> — this mobile app pairs with the <a href="fisico-da-urlo.html">web admin dashboard</a> (Project 02 · Web Apps) sharing the same FastAPI backend and database.
+        </div>
+    </section>
+
+    <section class="gallery-section">
+        <h2 class="section-heading">App Screens</h2>
+
+        <div class="gallery-main" id="galleryMain">
+            <div class="gallery-device-bar">
+                <span style="font-size:10px;color:var(--green);font-weight:700;letter-spacing:0.1em;">FLUTTER</span>
+                <div class="device-label" id="galleryUrl">Fisico Da Urlo — Login</div>
+                <span style="font-size:10px;color:var(--grey);">iOS · Android</span>
+            </div>
+            <div class="gallery-phone-stage">
+                <img class="gallery-main-img" id="galleryMainImg"
+                     src="fisico_app_screenshots/login.png"
+                     alt="Fisico Da Urlo login screen">
+            </div>
+            <div class="gallery-caption">
+                <span class="fig-label" id="galleryFig">Fig 1</span>
+                <span id="galleryCaptionText">Secure login — gym-branded authentication for members and administrators.</span>
+            </div>
+        </div>
+
+        <div class="gallery-strip">
+            <div class="gallery-thumb active" onclick="setGallery(0)" id="thumb-0">
+                <img src="fisico_app_screenshots/login.png" alt="Login">
+                <div class="thumb-label">Login</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(1)" id="thumb-1">
+                <img src="fisico_app_screenshots/home.png" alt="Home">
+                <div class="thumb-label">Home</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(2)" id="thumb-2">
+                <img src="fisico_app_screenshots/qr_checkin.png" alt="QR">
+                <div class="thumb-label">QR</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(3)" id="thumb-3">
+                <img src="fisico_app_screenshots/profile.png" alt="Profile">
+                <div class="thumb-label">Profile</div>
+            </div>
+            <div class="gallery-thumb" onclick="setGallery(4)" id="thumb-4">
+                <img src="fisico_app_screenshots/attendance.png" alt="Attendance">
+                <div class="thumb-label">Log</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Core Features</h2>
+        <div class="feature-list">
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+                <div><strong>QR Code Check-In</strong> — Members scan a unique QR code to instantly record attendance with no manual input.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                <div><strong>Fast Check-In / Out</strong> — Secure, speedy entry and exit reducing queues and wait times at the gym.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span>
+                <div><strong>Real-Time Logging</strong> — Attendance data recorded and visible immediately for gym management staff via the admin panel.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#b46aff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
+                <div><strong>Mobile-First UI</strong> — Smooth, intuitive Flutter interface optimised for a seamless member experience.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+                <div><strong>Profile &amp; History</strong> — Members view personal details, membership status, and full attendance history.</div>
+            </div>
+            <div class="feature-item">
+                <span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span>
+                <div><strong>Operational Efficiency</strong> — Eliminates paper registers and manual errors, saving time for gym staff.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">System Architecture</h2>
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Mobile — Flutter</h4>
+                <ul>
+                    <li>Cross-platform iOS &amp; Android</li>
+                    <li>QR scan check-in / check-out flow</li>
+                    <li>Member home dashboard</li>
+                    <li>Profile &amp; attendance history</li>
+                    <li>REST API integration</li>
+                    <li>App Store &amp; Google Play release</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Backend — FastAPI</h4>
+                <ul>
+                    <li>Python FastAPI on Aruba CMP</li>
+                    <li>MySQL member &amp; attendance data</li>
+                    <li>QR code validation logic</li>
+                    <li>Real-time attendance writes</li>
+                    <li>Shared API with admin panel</li>
+                    <li>HTTPS REST endpoints</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Member Workflow</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <div class="flow-num green-gradient">1</div>
+                <div>
+                    <div class="flow-title">Login</div>
+                    <div class="flow-desc">Member authenticates with secure credentials on the gym-branded login screen.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num green-gradient">2</div>
+                <div>
+                    <div class="flow-title">Home Dashboard</div>
+                    <div class="flow-desc">Quick actions, today's attendance summary, and navigation to QR check-in and profile.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num green-gradient">3</div>
+                <div>
+                    <div class="flow-title">Scan QR Code</div>
+                    <div class="flow-desc">Member displays or scans their unique QR code to log check-in or check-out in real time.</div>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num green-gradient">4</div>
+                <div>
+                    <div class="flow-title">View Attendance History</div>
+                    <div class="flow-desc">Past visits logged with timestamps — synced instantly to the admin panel for staff oversight.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Technologies Used</h2>
+        <div class="tech-grid">
+            <span class="tech-pill">Flutter</span>
+            <span class="tech-pill">Dart</span>
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">FastAPI</span>
+            <span class="tech-pill">MySQL</span>
+            <span class="tech-pill">QR Codes</span>
+            <span class="tech-pill">REST APIs</span>
+            <span class="tech-pill">Aruba CMP</span>
+            <span class="tech-pill">Google Play</span>
+            <span class="tech-pill">Apple App Store</span>
+            <span class="tech-pill">HTTPS</span>
+        </div>
+    </section>
+
+    <section class="project-links-section">
+        <h2 class="section-heading">Project Resources</h2>
+        <div class="links-grid">
+            <a href="https://drive.google.com/file/d/1eWawzQWzVgjIYMx_8R5tIfQzGnk9XzDC/view?usp=drive_link"
+               target="_blank" rel="noopener" class="project-link-card doc-card">
+                <div class="link-card-icon">📄</div>
+                <div class="link-card-body">
+                    <div class="link-card-label">Documentation</div>
+                    <div class="link-card-title">Mobile App Overview PDF</div>
+                    <div class="link-card-desc">Full documentation — QR workflow, architecture, deployment, and screen walkthrough</div>
+                </div>
+                <div class="link-card-arrow">→</div>
+            </a>
+            <a href="https://drive.google.com/file/d/1AbmazcSdSdACwDF4q4MN4aLt_K-M58eJ/view?usp=drive_link"
+               target="_blank" rel="noopener" class="project-link-card demo-card">
+                <div class="link-card-icon">▶️</div>
+                <div class="link-card-body">
+                    <div class="link-card-label">Demo Video</div>
+                    <div class="link-card-title">App Demo Recording</div>
+                    <div class="link-card-desc">Full mobile walkthrough — login, QR check-in, profile, and attendance history</div>
+                </div>
+                <div class="link-card-arrow">→</div>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="ejaz.html" class="fnav-link">← Ejaz</a>
+        <a href="golden-loaf.html" class="fnav-link">Golden Loaf →</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+
+    const slides = [
+        { src: 'fisico_app_screenshots/login.png', url: 'Fisico Da Urlo — Login', fig: 'Fig 1', caption: 'Secure login — gym-branded interface for member and admin authentication.' },
+        { src: 'fisico_app_screenshots/home.png', url: 'Fisico Da Urlo — Home Dashboard', fig: 'Fig 2', caption: 'Home screen — quick actions, today\'s attendance summary, and navigation to key sections.' },
+        { src: 'fisico_app_screenshots/qr_checkin.png', url: 'Fisico Da Urlo — QR Check-In', fig: 'Fig 3', caption: 'QR code screen — core feature for instant gym check-in and check-out in real time.' },
+        { src: 'fisico_app_screenshots/profile.png', url: 'Fisico Da Urlo — Profile', fig: 'Fig 4', caption: 'Profile page — member name, membership status, and account settings.' },
+        { src: 'fisico_app_screenshots/attendance.png', url: 'Fisico Da Urlo — Attendance Log', fig: 'Fig 5', caption: 'Attendance history — detailed log of past check-ins visible to members and synced to admin panel.' }
+    ];
+
+    let current = 0;
+
+    function setGallery(idx) {
+        current = idx;
+        const slide = slides[idx];
+        const mainImg = document.getElementById('galleryMainImg');
+        mainImg.style.opacity = '0';
+        mainImg.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => {
+            mainImg.src = slide.src;
+            mainImg.alt = slide.caption;
+            document.getElementById('galleryUrl').textContent = slide.url;
+            document.getElementById('galleryFig').textContent = slide.fig;
+            document.getElementById('galleryCaptionText').textContent = slide.caption;
+            mainImg.style.opacity = '1';
+        }, 200);
+        document.querySelectorAll('.gallery-thumb').forEach((t, i) => {
+            t.classList.toggle('active', i === idx);
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') setGallery((current + 1) % slides.length);
+        if (e.key === 'ArrowLeft')  setGallery((current - 1 + slides.length) % slides.length);
+    });
+
+    document.getElementById('galleryMainImg').addEventListener('click', () => {
+        setGallery((current + 1) % slides.length);
+    });
+</script>
+</body>
+</html>

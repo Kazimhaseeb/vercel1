@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment & DevOps Infrastructure — QuantStack</title>
+    <meta name="description" content="Docker containers, GitHub Actions CI/CD, Railway & Heroku cloud, Nginx + SSL — production-grade infrastructure powering all projects.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="project-styles.css">
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Portfolio
+    </a>
+    <div class="nav-project-label">08 · DevOps</div>
+</nav>
+
+<header class="proj-hero">
+    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(0,230,118,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.10) 0%, transparent 50%);"></div>
+    <div class="cover-grid-lines"></div>
+    <div class="hero-content">
+        <div class="hero-meta">
+            <span class="hero-num">Project 08</span>
+            <span class="hero-dot">·</span>
+            <span class="badge-green-pill">DEVOPS</span>
+        </div>
+        <h1 class="hero-title">Deployment &<br><span class="gradient-green">DevOps Infrastructure</span></h1>
+        <p class="hero-sub">Production deployment infrastructure for all projects — containerized with Docker, automated with GitHub Actions CI/CD pipelines, deployed to VPS and cloud platforms with Nginx + SSL and full monitoring.</p>
+        <div class="hero-tags">
+            <span class="htag">Docker</span>
+            <span class="htag">Docker Compose</span>
+            <span class="htag">GitHub Actions</span>
+            <span class="htag">Railway</span>
+            <span class="htag">Nginx</span>
+            <span class="htag">Certbot</span>
+            <span class="htag">Linux VPS</span>
+            <span class="htag">Sentry</span>
+        </div>
+    </div>
+</header>
+
+<main class="proj-main">
+
+    <div class="metrics-strip">
+        <div class="metric"><div class="m-val" style="color:#00e676;">Docker</div><div class="m-lbl">Containerized</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">CI/CD</div><div class="m-lbl">GitHub Actions</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">Nginx</div><div class="m-lbl">Reverse Proxy</div></div>
+        <div class="metric"><div class="m-val" style="color:#f5a623;">SSL/TLS</div><div class="m-lbl">Let's Encrypt</div></div>
+        <div class="metric"><div class="m-val" style="color:#00e676;">24/7</div><div class="m-lbl">Uptime</div></div>
+        <div class="metric"><div class="m-val" style="color:#00d4ff;">~3 min</div><div class="m-lbl">Deploy Pipeline</div></div>
+    </div>
+
+    <section class="section">
+        <div class="overview-card">
+            <p>Every project in this portfolio is built with <strong>production deployment in mind from day one</strong>. Trading bots run in isolated Docker containers on Linux VPS with automatic restart policies. The FastAPI + Django stack deploys via GitHub Actions to Railway with zero-downtime rolling updates. Nginx handles reverse proxying, SSL termination via Let's Encrypt, and rate limiting for all web services.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">CI/CD Pipeline</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#00e676,#69f0ae);">1</div>
+                <div><div class="flow-title">Push to main</div><div class="flow-desc">Developer pushes to main branch. GitHub Actions workflow triggers automatically within seconds.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#00e676,#69f0ae);">2</div>
+                <div><div class="flow-title">Lint & Test</div><div class="flow-desc">flake8 linting and full pytest suite run in parallel matrix. Any failure blocks the pipeline immediately with Telegram notification.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#00e676,#69f0ae);">3</div>
+                <div><div class="flow-title">Docker Build & Push</div><div class="flow-desc">Multi-stage Docker image built and pushed to Docker Hub with version tags. Layer caching keeps build times under 90 seconds.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#00e676,#69f0ae);">4</div>
+                <div><div class="flow-title">Railway Deploy</div><div class="flow-desc">Railway pulls latest Docker image and performs zero-downtime rolling deployment with health check verification.</div></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num" style="background:linear-gradient(135deg,#00e676,#69f0ae);">5</div>
+                <div><div class="flow-title">Monitor & Alert</div><div class="flow-desc">Sentry tracks errors, Telegram reports deployment success/failure. Total pipeline runtime: ~3 minutes end-to-end.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section two-col">
+        <div class="col-box">
+            <h4>Trading Bot Infrastructure</h4>
+            <ul>
+                <li>Docker containers with restart: always</li>
+                <li>Environment-based config (prod/paper/test)</li>
+                <li>Volume-mounted trade history persistence</li>
+                <li>Centralised logging with log rotation</li>
+                <li>Health check endpoints for monitoring</li>
+                <li>Telegram alerts on container failures</li>
+                <li>Docker Compose multi-bot orchestration</li>
+            </ul>
+        </div>
+        <div class="col-box">
+            <h4>Web Services CI/CD</h4>
+            <ul>
+                <li>GitHub Actions: lint → test → build → push</li>
+                <li>Docker Hub image registry with versioning</li>
+                <li>Railway auto-deploy on main branch push</li>
+                <li>Nginx + Certbot SSL on custom domain</li>
+                <li>Managed PostgreSQL on cloud DB</li>
+                <li>Sentry error tracking integration</li>
+                <li>Uptime monitoring with status page</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="hbox green">
+            <div class="hbox-label">Production Philosophy</div>
+            <p>Every bot and API is containerized with explicit dependency pinning, non-root users, and health check endpoints. Secrets managed via environment variables, never hardcoded. Logging structured as JSON for easy aggregation. Restart policies ensure 24/7 uptime even after crashes or VPS reboots.</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-heading">Technologies Used</h2>
+        <div class="tech-grid">
+            <span class="tech-pill">Docker</span>
+            <span class="tech-pill">Docker Compose</span>
+            <span class="tech-pill">GitHub Actions</span>
+            <span class="tech-pill">Railway</span>
+            <span class="tech-pill">Heroku</span>
+            <span class="tech-pill">Nginx</span>
+            <span class="tech-pill">Certbot / Let's Encrypt</span>
+            <span class="tech-pill">Linux (Ubuntu)</span>
+            <span class="tech-pill">pytest</span>
+            <span class="tech-pill">flake8</span>
+            <span class="tech-pill">Sentry</span>
+            <span class="tech-pill">Docker Hub</span>
+            <span class="tech-pill">pgBouncer</span>
+            <span class="tech-pill">systemd</span>
+        </div>
+    </section>
+
+</main>
+
+<footer class="proj-footer">
+    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
+    <div class="footer-nav">
+        <a href="automation.html" class="fnav-link">← Automation</a>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
+    }, { passive: true });
+</script>
+</body>
+</html>
