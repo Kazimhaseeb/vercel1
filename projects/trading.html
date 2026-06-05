@@ -910,15 +910,157 @@
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(0,212,255,0.5);
         }
+
+        /* ===== NAV SYSTEM ===== */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(5, 9, 26, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+            padding: 0 48px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8892b0;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--cyan); }
+        .nav-back svg { fill: currentColor; }
+
+        .nav-project-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #8892b0;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* ===== RESPONSIVE MEDIA QUERIES ===== */
+        @media (max-width: 900px) {
+            .nav {
+                padding: 0 24px;
+            }
+            .section-header {
+                padding: 52px 40px;
+            }
+            .bot-body {
+                padding: 40px 40px;
+            }
+            .cover {
+                padding: 60px 24px;
+            }
+            .toc-page {
+                padding: 60px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .config-table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .print-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 18px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav {
+                padding: 0 16px;
+            }
+            .nav-project-label {
+                display: none; /* Hide label on small mobile screens to prevent overflow */
+            }
+            .section-header {
+                padding: 44px 20px;
+            }
+            .bot-body {
+                padding: 32px 20px;
+            }
+            .cover-title {
+                font-size: 32px;
+            }
+            .cover-meta {
+                gap: 20px;
+            }
+            .cover-stat-row {
+                gap: 12px;
+                margin-top: 32px;
+            }
+            .cover-stat {
+                padding: 10px 16px;
+                flex: 1 1 140px;
+            }
+            .cover-stat .s-num {
+                font-size: 22px;
+            }
+            .toc-page {
+                padding: 40px 20px;
+            }
+            .toc-title {
+                font-size: 28px;
+            }
+            .toc-subtitle {
+                margin-bottom: 32px;
+            }
+            .overview-card {
+                padding: 20px 24px;
+            }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+            .highlight-box {
+                padding: 16px 20px;
+            }
+            .code-block {
+                padding: 16px 18px;
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .col-box {
+                padding: 16px;
+            }
+            .final-section {
+                padding: 50px 20px;
+            }
+            .final-section h2 {
+                font-size: 28px;
+            }
+            .future-bots-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-<nav style="position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,9,26,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,212,255,0.15);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="#" onclick="history.back();return false;" style="display:flex;align-items:center;gap:8px;color:#8892b0;text-decoration:none;font-size:13px;font-weight:600;font-family:Inter,sans-serif;transition:color 0.2s;" onmouseover="this.style.color='#00d4ff'" onmouseout="this.style.color='#8892b0'">
+<nav class="nav">
+    <a href="#" onclick="history.back();return false;" class="nav-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         Back to Portfolio
     </a>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8892b0;letter-spacing:0.12em;text-transform:uppercase;">01 · Algorithmic Trading Bots</span>
+    <span class="nav-project-label">01 · Algorithmic Trading Bots</span>
 </nav>
 <div style="height:60px;"></div>
 
