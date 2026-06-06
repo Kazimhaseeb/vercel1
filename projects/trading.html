@@ -32,6 +32,7 @@
             color: var(--white);
             line-height: 1.7;
             font-size: 15px;
+            overflow-x: hidden;
         }
 
         /* ===== PRINT MEDIA ===== */
@@ -280,6 +281,8 @@
             position: relative;
             overflow: hidden;
             margin-bottom: 0;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         .section-header::before {
@@ -589,11 +592,19 @@
         }
 
         /* ===== TABLE ===== */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
         .config-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            margin-bottom: 24px;
+            min-width: 520px;
         }
 
         .config-table thead tr {
@@ -953,10 +964,10 @@
                 padding: 0 24px;
             }
             .section-header {
-                padding: 52px 40px;
+                padding: 48px 32px;
             }
             .bot-body {
-                padding: 40px 40px;
+                padding: 40px 32px;
             }
             .cover {
                 padding: 60px 24px;
@@ -966,33 +977,21 @@
             }
         }
 
-        @media (max-width: 768px) {
-            .config-table {
-                display: block;
-                width: 100%;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .print-btn {
-                bottom: 20px;
-                right: 20px;
-                padding: 10px 18px;
-                font-size: 12px;
-            }
-        }
-
         @media (max-width: 640px) {
             .nav {
                 padding: 0 16px;
             }
-            .nav-project-label {
-                display: none; /* Hide label on small mobile screens to prevent overflow */
-            }
             .section-header {
-                padding: 44px 20px;
+                padding: 36px 20px;
+            }
+            .section-title {
+                font-size: clamp(22px, 6vw, 34px);
+            }
+            .section-tagline {
+                font-size: 14px;
             }
             .bot-body {
-                padding: 32px 20px;
+                padding: 28px 20px;
             }
             .cover-title {
                 font-size: 32px;
@@ -1311,6 +1310,7 @@
 
         <div class="content-section">
             <h3>Configuration Parameters</h3>
+            <div class="table-wrapper">
             <table class="config-table">
                 <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
                 <tbody>
@@ -1328,6 +1328,7 @@
                     <tr><td class="key-col">timeframe</td><td class="type-col">String</td><td>Minute</td><td>Bar timeframe: Minute, Hour, or Day.</td></tr>
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="content-section">
@@ -2171,7 +2172,7 @@ extrinsic = max(0, bid_price - intrinsic)
                     <div class="flow-num">2</div>
                     <div class="flow-content">
                         <div class="flow-title">Fetch from Polygon.io</div>
-                        <div class="flow-desc">Calls the <code>/v2/aggs/ticker/{symbol}/range/1/day/{from}/{to}</code> endpoint with <code>adjusted=true</code> and sorted ascending.</div>
+                        <div class="flow-desc">Calls the /v2/aggs/ticker/{symbol}/range/1/day/{from}/{to} endpoint with adjusted=true and sorted ascending.</div>
                     </div>
                 </div>
                 <div class="flow-step">
