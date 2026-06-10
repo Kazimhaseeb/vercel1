@@ -1,127 +1,1812 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automation Scripts & Bots — QuantStack</title>
-    <meta name="description" content="Web scrapers, Telegram signal bots, daily report emailers, Celery schedulers — eliminating manual work at scale with Python automation.">
+    <title>Automation Scripts & Bots — Technical Documentation</title>
+    <meta name="description" content="7 Python automation projects — job board scraper, OCR invoice extractor, price monitor bot, form test framework, social media analyzer, LinkedIn CRM bot, and AI news aggregator.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="project-styles.css">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy:       #05091a;
+            --navy-mid:   #0d1535;
+            --navy-light: #141d45;
+            --cyan:       #00d4ff;
+            --cyan-soft:  #00b4d8;
+            --gold:       #f5a623;
+            --gold-soft:  #e8962a;
+            --green:      #00e676;
+            --red:        #ff4f5a;
+            --white:      #f0f4ff;
+            --grey:       #8892b0;
+            --border:     rgba(0,212,255,0.15);
+        }
+
+        /* ===== BASE ===== */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            line-height: 1.7;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        /* ===== LAYOUT ===== */
+        .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+        /* ===== COVER PAGE ===== */
+        .cover {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #05091a 0%, #0d1535 50%, #05091a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(245,166,35,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.10) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .cover-grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .cover-logo-row {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tech-badge {
+            padding: 8px 18px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            background: rgba(13,21,53,0.7);
+            backdrop-filter: blur(8px);
+            color: var(--gold);
+        }
+
+        .cover-eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(38px, 6vw, 64px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-title .gradient-text {
+            background: linear-gradient(135deg, var(--gold), #ffcc6a, var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-subtitle {
+            font-size: 18px;
+            color: var(--grey);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--cyan));
+            border-radius: 2px;
+            margin: 24px auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+            margin-top: 20px;
+        }
+
+        .cover-meta-item { text-align: center; }
+        .cover-meta-item .label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--grey);
+            margin-bottom: 4px;
+        }
+        .cover-meta-item .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .cover-stat-row {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 50px;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+        }
+
+        .cover-stat {
+            border: 1px solid rgba(245,166,35,0.25);
+            border-radius: 12px;
+            padding: 14px 24px;
+            background: rgba(13,21,53,0.6);
+            backdrop-filter: blur(8px);
+            text-align: center;
+        }
+
+        .cover-stat .s-num { font-size: 26px; font-weight: 900; color: var(--gold); }
+        .cover-stat .s-label { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; margin-top: 2px; }
+
+        /* ===== TOC ===== */
+        .toc-page {
+            padding: 80px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .toc-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .toc-subtitle {
+            color: var(--grey);
+            font-size: 14px;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px dashed rgba(136,146,176,0.2);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+
+        .toc-item:hover { color: var(--gold); }
+
+        .toc-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gold);
+            width: 28px;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .toc-name {
+            font-size: 15px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .toc-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .tag-scraping  { background: rgba(245,166,35,0.15); color: var(--gold); }
+        .tag-ocr       { background: rgba(0,212,255,0.12); color: var(--cyan); }
+        .tag-monitor   { background: rgba(0,230,118,0.12); color: var(--green); }
+        .tag-testing   { background: rgba(100,180,255,0.12); color: #64b4ff; }
+        .tag-nlp       { background: rgba(180,100,255,0.12); color: #b46aff; }
+        .tag-linkedin  { background: rgba(255,79,90,0.12); color: var(--red); }
+        .tag-ai        { background: rgba(245,166,35,0.15); color: var(--gold); }
+
+        /* ===== SECTION HEADER ===== */
+        .section-header {
+            background: linear-gradient(135deg, #0d1535, #141d45);
+            padding: 70px 60px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 0;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 0% 50%, rgba(245,166,35,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse at 100% 50%, rgba(0,212,255,0.07) 0%, transparent 60%);
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            line-height: 1.15;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 16px;
+        }
+
+        .section-tagline {
+            font-size: 16px;
+            color: var(--grey);
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+            line-height: 1.6;
+        }
+
+        .section-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border: 1px solid transparent;
+        }
+
+        .badge-cyan   { background: rgba(0,212,255,0.12); color: var(--cyan); border-color: rgba(0,212,255,0.25); }
+        .badge-gold   { background: rgba(245,166,35,0.12); color: var(--gold); border-color: rgba(245,166,35,0.25); }
+        .badge-green  { background: rgba(0,230,118,0.12); color: var(--green); border-color: rgba(0,230,118,0.25); }
+        .badge-red    { background: rgba(255,79,90,0.12); color: var(--red); border-color: rgba(255,79,90,0.25); }
+        .badge-purple { background: rgba(180,100,255,0.12); color: #b46aff; border-color: rgba(180,100,255,0.25); }
+        .badge-blue   { background: rgba(100,180,255,0.12); color: #64b4ff; border-color: rgba(100,180,255,0.25); }
+
+        /* ===== BOT SECTION BODY ===== */
+        .bot-body {
+            padding: 50px 60px;
+            background: var(--navy-mid);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ===== OVERVIEW CARD ===== */
+        .overview-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 32px;
+            background: rgba(5,9,26,0.6);
+            margin-bottom: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--cyan));
+        }
+
+        .overview-card p {
+            color: var(--white);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* ===== METRICS GRID ===== */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .metric-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 18px;
+            background: rgba(5,9,26,0.5);
+            text-align: center;
+        }
+
+        .metric-card .m-icon { font-size: 22px; margin-bottom: 8px; }
+        .metric-card .m-value { font-size: 20px; font-weight: 800; color: var(--gold); margin-bottom: 4px; }
+        .metric-card .m-label { font-size: 11px; color: var(--grey); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+        /* ===== CONTENT SECTIONS ===== */
+        .content-section { margin-bottom: 36px; }
+
+        .content-section h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-section h3::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .content-section p {
+            color: #c8d3f5;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        /* ===== FEATURE LIST ===== */
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(5,9,26,0.4);
+            font-size: 13px;
+            color: #c8d3f5;
+            line-height: 1.5;
+        }
+
+        .feature-item .fi-icon {
+            color: var(--gold);
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .feature-item .fi-icon.cyan  { color: var(--cyan); }
+        .feature-item .fi-icon.green { color: var(--green); }
+        .feature-item .fi-icon.red   { color: var(--red); }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight-box {
+            border: 1px solid;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .highlight-box.cyan   { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+        .highlight-box.gold   { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.05); }
+        .highlight-box.green  { border-color: rgba(0,230,118,0.3); background: rgba(0,230,118,0.05); }
+        .highlight-box.purple { border-color: rgba(180,100,255,0.3); background: rgba(180,100,255,0.05); }
+
+        .highlight-box .hb-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .highlight-box.cyan   .hb-label { color: var(--cyan); }
+        .highlight-box.gold   .hb-label { color: var(--gold); }
+        .highlight-box.green  .hb-label { color: var(--green); }
+        .highlight-box.purple .hb-label { color: #b46aff; }
+
+        .highlight-box p {
+            color: #c8d3f5;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            background: #020817;
+            border: 1px solid rgba(245,166,35,0.15);
+            border-radius: 10px;
+            padding: 20px 22px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #a8b2d8;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .code-block .kw  { color: #c792ea; }
+        .code-block .str { color: #c3e88d; }
+        .code-block .num { color: var(--gold); }
+        .code-block .cm  { color: #546e7a; }
+        .code-block .fn  { color: #82aaff; }
+
+        /* ===== STRATEGY FLOW ===== */
+        .strategy-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 16px 0;
+            position: relative;
+        }
+
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 44px;
+            bottom: -16px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--gold), transparent);
+        }
+
+        .flow-step:last-child::before { display: none; }
+
+        .flow-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), #ffcc6a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+
+        .flow-content .flow-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .flow-content .flow-desc {
+            font-size: 13px;
+            color: var(--grey);
+            line-height: 1.6;
+        }
+
+        /* ===== TAGS ROW ===== */
+        .tags-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(136,146,176,0.12);
+            color: var(--grey);
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 520px;
+        }
+
+        .config-table thead tr {
+            background: rgba(245,166,35,0.08);
+            border-bottom: 2px solid rgba(245,166,35,0.2);
+        }
+
+        .config-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .config-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(136,146,176,0.1);
+            color: #c8d3f5;
+            vertical-align: top;
+        }
+
+        .config-table tr:last-child td { border-bottom: none; }
+        .config-table tr:hover td { background: rgba(245,166,35,0.03); }
+
+        .config-table .key-col {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--gold);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .config-table .type-col {
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ===== TWO COLUMN ===== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+        .col-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            background: rgba(5,9,26,0.4);
+        }
+
+        .col-box h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .col-box ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .col-box ul li {
+            font-size: 13px;
+            color: #c8d3f5;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .col-box ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-size: 12px;
+        }
+
+        /* ===== FINAL SECTION ===== */
+        .final-section {
+            background: linear-gradient(135deg, #0d1535, #141d45);
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .final-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(245,166,35,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(0,212,255,0.10) 0%, transparent 60%);
+        }
+
+        .final-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 800;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 16px;
+        }
+
+        .final-section .gradient-text {
+            background: linear-gradient(135deg, var(--gold), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-section p {
+            font-size: 16px;
+            color: var(--grey);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== SECTION SEPARATOR ===== */
+        .sep {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0;
+        }
+
+        hr.fancy {
+            border: none;
+            border-top: 1px dashed rgba(136,146,176,0.2);
+            margin: 32px 0;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--navy); }
+        ::-webkit-scrollbar-thumb { background: rgba(245,166,35,0.3); border-radius: 3px; }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(5, 9, 26, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(245,166,35,0.15);
+            padding: 0 48px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8892b0;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--gold); }
+        .nav-back svg { fill: currentColor; }
+
+        .nav-project-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #8892b0;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .nav { padding: 0 24px; }
+            .section-header { padding: 48px 32px; }
+            .bot-body { padding: 40px 32px; }
+            .cover { padding: 60px 24px; }
+            .toc-page { padding: 60px 24px; }
+        }
+
+        @media (max-width: 640px) {
+            .nav { padding: 0 16px; }
+            .section-header { padding: 36px 20px; }
+            .section-title { font-size: clamp(22px, 6vw, 34px); }
+            .bot-body { padding: 28px 20px; }
+            .cover-title { font-size: 32px; }
+            .cover-meta { gap: 20px; }
+            .cover-stat-row { gap: 12px; margin-top: 32px; }
+            .cover-stat { padding: 10px 16px; flex: 1 1 140px; }
+            .cover-stat .s-num { font-size: 22px; }
+            .toc-page { padding: 40px 20px; }
+            .toc-title { font-size: 28px; }
+            .overview-card { padding: 20px 24px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .feature-list { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+            .final-section { padding: 50px 20px; }
+            .final-section h2 { font-size: 28px; }
+        }
+    </style>
 </head>
 <body>
-
-<div class="scroll-progress" id="scrollProgress"></div>
 
 <nav class="nav">
     <a href="#" onclick="history.back();return false;" class="nav-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         Back to Portfolio
     </a>
-    <div class="nav-project-label">07 · Automation</div>
+    <span class="nav-project-label">07 · Automation Scripts &amp; Bots</span>
 </nav>
+<div style="height:60px;"></div>
 
-<header class="proj-hero">
-    <div class="hero-bg-glow" style="background:radial-gradient(ellipse at 20% 50%, rgba(245,166,35,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,212,255,0.10) 0%, transparent 50%);"></div>
+
+<!-- ===== COVER PAGE ===== -->
+<div class="cover">
     <div class="cover-grid-lines"></div>
-    <div class="hero-content">
-        <div class="hero-meta">
-            <span class="hero-num">Project 07</span>
-            <span class="hero-dot">·</span>
-            <span class="badge-gold-pill">AUTOMATION</span>
-        </div>
-        <h1 class="hero-title">Automation Scripts<br><span class="gradient-gold">& Bots</span></h1>
-        <p class="hero-sub">A library of battle-tested automation scripts — from multi-site web scrapers and financial data harvesters, to Telegram signal bots, scheduled report generators, and distributed task orchestration pipelines.</p>
-        <div class="hero-tags">
-            <span class="htag">Selenium</span>
-            <span class="htag">BeautifulSoup4</span>
-            <span class="htag">Scrapy</span>
-            <span class="htag">Celery</span>
-            <span class="htag">python-telegram-bot</span>
-            <span class="htag">aiohttp</span>
-            <span class="htag">schedule</span>
-            <span class="htag">openpyxl</span>
-        </div>
-    </div>
-</header>
 
-<main class="proj-main">
-
-    <div class="metrics-strip">
-        <div class="metric"><div class="m-val" style="color:#f5a623;">5+</div><div class="m-lbl">Sites Scraped</div></div>
-        <div class="metric"><div class="m-val" style="color:#f5a623;">1 min</div><div class="m-lbl">Update Interval</div></div>
-        <div class="metric"><div class="m-val" style="color:#00d4ff;">Daily</div><div class="m-lbl">Email Reports</div></div>
-        <div class="metric"><div class="m-val" style="color:#00d4ff;">Telegram</div><div class="m-lbl">Alert Channel</div></div>
-        <div class="metric"><div class="m-val" style="color:#00e676;">20+</div><div class="m-lbl">Periodic Jobs</div></div>
-        <div class="metric"><div class="m-val" style="color:#f5a623;">Python</div><div class="m-lbl">Language</div></div>
+    <div class="cover-logo-row">
+        <span class="tech-badge">SCRAPY</span>
+        <span class="tech-badge">SELENIUM</span>
+        <span class="tech-badge">TESSERACT</span>
+        <span class="tech-badge">HUGGINGFACE</span>
+        <span class="tech-badge">FASTAPI</span>
+        <span class="tech-badge">NLTK</span>
     </div>
 
-    <section class="section">
+    <div class="cover-eyebrow">Python Automation Portfolio</div>
+
+    <h1 class="cover-title">
+        <span class="gradient-text">Automation Scripts</span><br>
+        &amp; Bots
+    </h1>
+
+    <p class="cover-subtitle">
+        A comprehensive technical reference covering 7 Python automation projects —
+        from web scrapers and OCR pipelines to Telegram bots, test frameworks, NLP analyzers, CRM bots, and AI-powered news aggregators.
+    </p>
+
+    <div class="cover-divider"></div>
+
+    <div class="cover-meta">
+        <div class="cover-meta-item">
+            <div class="label">Projects</div>
+            <div class="value">7</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Year</div>
+            <div class="value">2026</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Language</div>
+            <div class="value">Python</div>
+        </div>
+    </div>
+
+    <div class="cover-stat-row">
+        <div class="cover-stat">
+            <div class="s-num">7</div>
+            <div class="s-label">Total Projects</div>
+        </div>
+        <div class="cover-stat">
+            <div class="s-num">3+</div>
+            <div class="s-label">Sites Scraped</div>
+        </div>
+        <div class="cover-stat">
+            <div class="s-num">AI</div>
+            <div class="s-label">Summarization</div>
+        </div>
+        <div class="cover-stat">
+            <div class="s-num">100%</div>
+            <div class="s-label">Python Powered</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TABLE OF CONTENTS ===== -->
+<div class="toc-page">
+    <div class="toc-title">Table of Contents</div>
+    <div class="toc-subtitle">A full index of all automation projects documented in this reference.</div>
+
+    <a href="#proj1" class="toc-item">
+        <span class="toc-num">01</span>
+        <span class="toc-name">Job Board Aggregator &amp; Tracker</span>
+        <span class="toc-tag tag-scraping">SCRAPING</span>
+    </a>
+    <a href="#proj2" class="toc-item">
+        <span class="toc-num">02</span>
+        <span class="toc-name">Invoice / Receipt OCR Data Extractor</span>
+        <span class="toc-tag tag-ocr">OCR</span>
+    </a>
+    <a href="#proj3" class="toc-item">
+        <span class="toc-num">03</span>
+        <span class="toc-name">E-commerce Price Monitor &amp; Alert Bot</span>
+        <span class="toc-tag tag-monitor">MONITOR</span>
+    </a>
+    <a href="#proj4" class="toc-item">
+        <span class="toc-num">04</span>
+        <span class="toc-name">Automated Form Filler &amp; Test Framework</span>
+        <span class="toc-tag tag-testing">TESTING</span>
+    </a>
+    <a href="#proj5" class="toc-item">
+        <span class="toc-num">05</span>
+        <span class="toc-name">Social Media Content Scraper &amp; Analyzer</span>
+        <span class="toc-tag tag-nlp">NLP</span>
+    </a>
+    <a href="#proj6" class="toc-item">
+        <span class="toc-num">06</span>
+        <span class="toc-name">LinkedIn Auto-Outreach &amp; CRM Bot</span>
+        <span class="toc-tag tag-linkedin">CRM</span>
+    </a>
+    <a href="#proj7" class="toc-item">
+        <span class="toc-num">07</span>
+        <span class="toc-name">Newspaper Aggregator with AI Summarizer</span>
+        <span class="toc-tag tag-ai">AI</span>
+    </a>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- PROJECT 1 — JOB BOARD AGGREGATOR -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj1">
+    <div class="section-header">
+        <div class="section-num">PROJECT 01 / SCRAPY · SELENIUM · FLASK</div>
+        <h2 class="section-title">Job Board Aggregator &amp; Tracker</h2>
+        <p class="section-tagline">A multi-site job scraping platform that aggregates listings from Rozee.pk, Indeed, and LinkedIn into a single SQLite database, with a Flask dashboard to filter and track applications and email alerts for new matching jobs.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">Scrapy Spiders</span>
+            <span class="badge badge-cyan">Selenium JS</span>
+            <span class="badge badge-green">Flask Dashboard</span>
+            <span class="badge badge-green">Email Alerts</span>
+            <span class="badge badge-blue">SQLite</span>
+            <span class="badge badge-purple">Deduplication</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
         <div class="overview-card">
-            <p>A comprehensive suite of automation tools that eliminate manual work. The <strong>Multi-Exchange Scraper</strong> harvests orderbook depth, funding rates, and open interest across 5 exchanges every minute. The <strong>Automated Report Generator</strong> aggregates daily trade performance and market summary into styled HTML emails delivered at market close. The <strong>Telegram Signal Bot</strong> broadcasts trading signals, bot status updates, and risk alerts in real time.</p>
+            <p>This project tackles a real pain point: job hunting across multiple platforms simultaneously. <strong>Scrapy spiders</strong> handle static sites like Rozee.pk and Indeed, extracting job titles, companies, links, and dates efficiently. For JavaScript-rendered pages on LinkedIn, <strong>Selenium WebDriver</strong> takes over, scrolling and waiting for dynamic content to load before parsing. All listings are stored in <strong>SQLite</strong> with a deduplication layer that checks URL hashes to prevent duplicate entries across runs. A <strong>Flask dashboard</strong> lets you filter by skill, salary range, or location, and an SMTP-based email alert fires whenever a new listing matches your saved criteria.</p>
         </div>
-    </section>
 
-    <section class="section">
-        <h2 class="section-heading">Automation Scripts Portfolio</h2>
-        <div class="feature-list">
-            <div class="feature-item"><span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Exchange Data Scraper:</strong> Async scraping of orderbook, funding rates, open interest, and liquidations across Binance, Bybit, OKX every 60 seconds.</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Telegram Signal Bot:</strong> Real-time broadcast of trading signals, bot status updates, P&L summaries, and risk alerts to a private channel with command handling.</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Daily Report Emailer:</strong> Styled HTML email with trade summary, drawdown metrics, best/worst trades — sent via SMTP at market close (4:05 PM ET).</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#64b4ff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>News Headline Harvester:</strong> Scrapes financial news from Reuters, Bloomberg, CoinDesk — deduplicates, stores structured data for sentiment analysis input.</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#b46aff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Celery Task Scheduler:</strong> Distributed task queue managing 20+ periodic jobs with retry logic, dead-letter queuing, and failure alerting via Telegram.</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#f5a623;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Excel Trade Journal:</strong> Auto-generates formatted trading journals and performance reports as styled Excel workbooks using openpyxl with charts.</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#00d4ff;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>SEC Filing Downloader:</strong> Bulk-fetches 10-K/10-Q filings from EDGAR API, parses XBRL data, and organises into structured datasets for ML ingestion.</div></div>
-            <div class="feature-item"><span class="fi-dot" style="color:#00e676;"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="flex-shrink:0;margin-top:3px;"><circle cx="12" cy="12" r="5"/></svg></span><div><strong>Social Sentiment Tracker:</strong> Scrapy spider monitoring Reddit (r/wallstreetbets, r/stocks) for ticker mentions, sentiment scoring, and trend alerts.</div></div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+                <div class="m-value">3 Sites</div>
+                <div class="m-label">Scraped</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+                <div class="m-value">SQLite</div>
+                <div class="m-label">Storage</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="m-value">Email</div>
+                <div class="m-label">Alerts</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="m-value">Auto</div>
+                <div class="m-label">Deduplication</div>
+            </div>
         </div>
-    </section>
 
-    <section class="section two-col">
-        <div class="hbox gold">
-            <div class="hbox-label">Async Architecture</div>
-            <p>All scrapers use aiohttp + asyncio for concurrent HTTP requests, achieving 50x throughput vs synchronous code. aiohttp session pooling and rate-limit-aware semaphore controls prevent API bans.</p>
+        <div class="content-section">
+            <h3>How It Works</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Scrapy Spiders — Static Sites</div>
+                        <div class="flow-desc">Scrapy spiders crawl Rozee.pk and Indeed, following pagination and extracting job title, company name, location, salary (if listed), posting date, and job URL from each listing page.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Selenium — JS-Rendered LinkedIn</div>
+                        <div class="flow-desc">A headless Chrome session via Selenium handles LinkedIn's JavaScript-heavy job feed. The bot scrolls to load more listings, waits for network requests to settle, then extracts the same structured fields via BeautifulSoup on the rendered HTML.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Deduplication &amp; SQLite Storage</div>
+                        <div class="flow-desc">Before inserting any record, a URL hash is checked against the existing database. Duplicates are silently skipped. New listings are inserted with a default application status of "Not Applied".</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Flask Dashboard</div>
+                        <div class="flow-desc">A lightweight Flask web app renders all stored jobs in a filterable table. Filters for skill keywords, salary range, and location are applied server-side. Application status can be updated directly from the dashboard.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Email Alert System</div>
+                        <div class="flow-desc">After each scrape run, new listings are matched against saved alert criteria (keywords, location). Matching new jobs are bundled into a formatted HTML email and sent via SMTP so you never miss a relevant posting.</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="hbox cyan">
-            <div class="hbox-label">Celery + Redis</div>
-            <p>Celery Beat manages 20+ periodic tasks — data scraping, report generation, model re-training, and cleanup jobs. Redis serves as both message broker and result backend with task monitoring via Flower.</p>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Data Captured</h4>
+                <ul>
+                    <li>Job title &amp; company name</li>
+                    <li>Location &amp; salary (where available)</li>
+                    <li>Posting date &amp; source platform</li>
+                    <li>Job URL &amp; application status</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Key Features</h4>
+                <ul>
+                    <li>Multi-site scraping in a single run</li>
+                    <li>URL-hash deduplication across runs</li>
+                    <li>Dashboard filter by skill / location</li>
+                    <li>Automated email alerts on new matches</li>
+                </ul>
+            </div>
         </div>
-    </section>
 
-    <section class="section">
-        <h2 class="section-heading">Technologies Used</h2>
-        <div class="tech-grid">
-            <span class="tech-pill">Selenium</span>
-            <span class="tech-pill">BeautifulSoup4</span>
-            <span class="tech-pill">Scrapy</span>
-            <span class="tech-pill">aiohttp</span>
-            <span class="tech-pill">python-telegram-bot</span>
-            <span class="tech-pill">Celery</span>
-            <span class="tech-pill">Redis</span>
-            <span class="tech-pill">schedule</span>
-            <span class="tech-pill">smtplib</span>
-            <span class="tech-pill">openpyxl</span>
-            <span class="tech-pill">Jinja2</span>
-            <span class="tech-pill">asyncio</span>
-            <span class="tech-pill">httpx</span>
-            <span class="tech-pill">Flower</span>
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">Scrapy</span>
+                <span class="tag">Selenium WebDriver</span>
+                <span class="tag">BeautifulSoup4</span>
+                <span class="tag">SQLite3</span>
+                <span class="tag">Flask</span>
+                <span class="tag">smtplib</span>
+                <span class="tag">hashlib</span>
+                <span class="tag">schedule</span>
+            </div>
         </div>
-    </section>
-
-</main>
-
-<footer class="proj-footer">
-    <a href="#" onclick="history.back();return false;" class="back-btn">← All Projects</a>
-    <div class="footer-nav">
-        <a href="flutter.html" class="fnav-link">← Flutter Apps</a>
-        <a href="devops.html" class="fnav-link">DevOps →</a>
     </div>
-</footer>
+</div>
 
-<script>
-    window.addEventListener('scroll', () => {
-        const p = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-        document.getElementById('scrollProgress').style.width = (p * 100) + '%';
-    }, { passive: true });
-</script>
+
+<!-- ========================================================== -->
+<!-- PROJECT 2 — INVOICE OCR EXTRACTOR -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj2">
+    <div class="section-header">
+        <div class="section-num">PROJECT 02 / TESSERACT · OPENCV · PDF2IMAGE</div>
+        <h2 class="section-title">Invoice / Receipt OCR Data Extractor</h2>
+        <p class="section-tagline">An end-to-end OCR pipeline that converts scanned PDF invoices into structured data — deskewing and denoising images with OpenCV, extracting text with Tesseract, parsing key fields with Regex, and exporting to CSV or Excel automatically.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">pdf2image</span>
+            <span class="badge badge-cyan">OpenCV</span>
+            <span class="badge badge-green">Tesseract OCR</span>
+            <span class="badge badge-blue">Regex Parsing</span>
+            <span class="badge badge-purple">Urdu / Arabic</span>
+            <span class="badge badge-green">CSV / Excel Export</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>Manual invoice data entry is error-prone and time-consuming. This pipeline automates the full extraction workflow: <strong>pdf2image</strong> renders each PDF page as a high-resolution image, <strong>OpenCV</strong> preprocesses it by deskewing skewed scans, denoising, and applying adaptive thresholding for cleaner OCR input, and <strong>Tesseract</strong> extracts the raw text. Custom <strong>Regex patterns</strong> then parse vendor name, invoice date, line-item totals, tax amounts, and grand totals from the raw text output. The extracted data is exported to structured CSV or Excel files automatically. Crucially, <strong>Tesseract language packs</strong> for Urdu and Arabic are configured to handle bilingual invoices common in Pakistan and Gulf markets.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+                <div class="m-value">PDF</div>
+                <div class="m-label">Input Format</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div class="m-value">OCR</div>
+                <div class="m-label">Tesseract</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                <div class="m-value">Urdu</div>
+                <div class="m-label">Lang Support</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div>
+                <div class="m-value">Excel</div>
+                <div class="m-label">Output</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Pipeline Steps</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">PDF → Image Conversion (pdf2image)</div>
+                        <div class="flow-desc">Each page of the scanned PDF invoice is rendered at 300 DPI using pdf2image (Poppler backend), producing a high-resolution PIL Image object per page for downstream processing.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">OpenCV Preprocessing</div>
+                        <div class="flow-desc">The image is converted to grayscale, deskewed using the Hough line transform to correct scan rotation, denoised with a Gaussian blur, and binarised using adaptive thresholding — producing a clean black-and-white image optimised for Tesseract accuracy.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Tesseract OCR Extraction</div>
+                        <div class="flow-desc">pytesseract runs Tesseract on the preprocessed image with the appropriate language pack (eng, urd, or ara). The raw text output is a string containing all detected characters from the invoice page.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Regex Field Parsing</div>
+                        <div class="flow-desc">Custom Regex patterns are applied to the raw text to extract: Vendor Name, Invoice Number, Date, Subtotal, Tax percentage and amount, and Grand Total. Patterns handle common formatting variations across different invoice layouts.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">CSV / Excel Export</div>
+                        <div class="flow-desc">Structured field data is written to CSV using the csv module or to a formatted Excel workbook using openpyxl, with column headers, data types, and optional per-vendor sheets.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box gold">
+            <div class="hb-label">Multilingual Support</div>
+            <p>The pipeline is configured with Tesseract language packs for Urdu (<code>urd</code>) and Arabic (<code>ara</code>), enabling accurate OCR on bilingual invoices — critical for Pakistani and Gulf market use cases where vendor names, addresses, and item descriptions mix English with Urdu or Arabic script.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Fields Extracted</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Vendor Name</strong> — Parsed from invoice header region</div>
+                </div>
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Invoice Date</strong> — Regex matches DD/MM/YYYY, YYYY-MM-DD, and text dates</div>
+                </div>
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Subtotal &amp; Tax</strong> — Extracted with numeric Regex patterns</div>
+                </div>
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Grand Total</strong> — Highest numeric value in the totals region</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">pdf2image</span>
+                <span class="tag">OpenCV (cv2)</span>
+                <span class="tag">pytesseract</span>
+                <span class="tag">Pillow</span>
+                <span class="tag">re (Regex)</span>
+                <span class="tag">openpyxl</span>
+                <span class="tag">csv</span>
+                <span class="tag">Poppler</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- PROJECT 3 — PRICE MONITOR BOT -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj3">
+    <div class="section-header">
+        <div class="section-num">PROJECT 03 / BEAUTIFULSOUP · APSCHEDULER · TELEGRAM</div>
+        <h2 class="section-title">E-commerce Price Monitor &amp; Alert Bot</h2>
+        <p class="section-tagline">An automated price-watching system that scrapes product prices from Daraz and Amazon on an hourly schedule, stores full price history in SQLite, and fires a Telegram notification the moment a price drops below your set threshold.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">BeautifulSoup4</span>
+            <span class="badge badge-cyan">requests-html</span>
+            <span class="badge badge-green">APScheduler</span>
+            <span class="badge badge-green">Telegram Bot</span>
+            <span class="badge badge-blue">SQLite History</span>
+            <span class="badge badge-purple">matplotlib Charts</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This bot lets you track product prices on Daraz and Amazon without ever refreshing the page. <strong>BeautifulSoup4</strong> handles standard HTML product pages while <strong>requests-html</strong> (with its JavaScript rendering capability) tackles JS-heavy product listings. <strong>APScheduler</strong> runs a price check every hour in the background. Every recorded price is stored in <strong>SQLite</strong> as a timestamped entry, building a complete price history per product. When the current price dips below your configured threshold, a <strong>Telegram notification</strong> is sent instantly to your channel. A built-in <strong>CLI</strong> lets you add or remove tracked products without touching the code, and <strong>matplotlib</strong> can render a price history chart for any tracked product.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+                <div class="m-value">2 Sites</div>
+                <div class="m-label">Daraz &amp; Amazon</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="m-value">Hourly</div>
+                <div class="m-label">Check Interval</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2h-19A1.5 1.5 0 0 0 1 3.5v13A1.5 1.5 0 0 0 2.5 18H9l3 4 3-4h6.5a1.5 1.5 0 0 0 1.5-1.5v-13A1.5 1.5 0 0 0 21.5 2z"/></svg></div>
+                <div class="m-value">Telegram</div>
+                <div class="m-label">Alerts</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+                <div class="m-value">Charts</div>
+                <div class="m-label">Price History</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>How It Works</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Add Products via CLI</div>
+                        <div class="flow-desc">Run <code>python bot.py add --url "https://daraz.pk/..." --threshold 2500</code> to register a product. The URL, target threshold, and product name are stored in the SQLite products table. Remove with <code>python bot.py remove --id 3</code>.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Scrape Price</div>
+                        <div class="flow-desc">For each tracked product URL, requests-html fetches the page (rendering JavaScript for SPAs), then BeautifulSoup parses the price element using CSS selectors or XPath patterns specific to each site.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Store to SQLite Price History</div>
+                        <div class="flow-desc">The scraped price and current timestamp are inserted into a price_history table, associating the reading with the product ID. This builds a complete timeline of every price recorded.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Threshold Check &amp; Telegram Alert</div>
+                        <div class="flow-desc">If the scraped price is at or below the product's configured threshold, the Telegram Bot API sends a formatted message to the configured chat/channel with the product name, current price, threshold, and a direct link.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Price History Chart</div>
+                        <div class="flow-desc">Run <code>python bot.py chart --id 3</code> to generate a matplotlib line chart of all recorded prices for that product over time, showing trend and price volatility at a glance.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Sites Supported</h4>
+                <ul>
+                    <li>Daraz.pk — Pakistan's largest e-commerce</li>
+                    <li>Amazon — Standard product pages</li>
+                    <li>Extensible to any site via CSS selectors</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Alert Conditions</h4>
+                <ul>
+                    <li>Price drops at or below threshold</li>
+                    <li>Product goes back in stock</li>
+                    <li>Price change exceeds X% in one check</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">BeautifulSoup4</span>
+                <span class="tag">requests-html</span>
+                <span class="tag">APScheduler</span>
+                <span class="tag">python-telegram-bot</span>
+                <span class="tag">SQLite3</span>
+                <span class="tag">matplotlib</span>
+                <span class="tag">argparse</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- PROJECT 4 — FORM FILLER & TEST FRAMEWORK -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj4">
+    <div class="section-header">
+        <div class="section-num">PROJECT 04 / SELENIUM · PYTEST · FAKER</div>
+        <h2 class="section-title">Automated Form Filler &amp; Test Framework</h2>
+        <p class="section-tagline">A Selenium-based automated testing framework that generates realistic fake test data with Faker, organises test cases with pytest, captures failure screenshots automatically, and produces a full HTML report after every run — all configurable via a single YAML file.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">Selenium WebDriver</span>
+            <span class="badge badge-cyan">Headless Chrome</span>
+            <span class="badge badge-green">pytest</span>
+            <span class="badge badge-green">Faker</span>
+            <span class="badge badge-blue">HTML Reports</span>
+            <span class="badge badge-purple">YAML Config</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>Manual form testing across client websites is tedious and error-prone. This framework automates it entirely. <strong>Selenium WebDriver</strong> launches Chrome in headless mode for speed and runs against any site URL. The <strong>Faker</strong> library generates realistic names, emails, phone numbers, and addresses for test data — no hardcoded values. <strong>pytest</strong> organises all test cases cleanly with fixtures, parametrize decorators, and shared conftest setup. On any test failure, a <strong>screenshot is saved automatically</strong> to a timestamped failure folder. After every run, a full <strong>HTML report</strong> is generated via pytest-html. A <strong>YAML config file</strong> stores base URL, form selectors, and test parameters, meaning new client sites can be added without any code changes.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="m-value">Headless</div>
+                <div class="m-label">Chrome Mode</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="m-value">Faker</div>
+                <div class="m-label">Realistic Data</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+                <div class="m-value">Auto</div>
+                <div class="m-label">Failure Screenshots</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+                <div class="m-value">HTML</div>
+                <div class="m-label">Test Report</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Test Coverage</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Login Form Testing</strong> — Valid credentials, wrong password, locked account, and empty field validation</div>
+                </div>
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Signup / Registration</strong> — Faker-generated user data, email uniqueness, required field checks</div>
+                </div>
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Checkout Flow</strong> — Full cart-to-payment step validation including address and card fields</div>
+                </div>
+                <div class="feature-item">
+                    <span class="fi-icon">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                    <div><strong>Contact Form</strong> — Message submission, character limits, CAPTCHA bypass detection</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box cyan">
+            <div class="hb-label">Zero-Code Client Onboarding</div>
+            <p>The <strong>YAML config file</strong> stores base URL, CSS selectors for each form field, test user credentials, and expected success messages. Adding a new client site means updating the YAML only — no Python changes required. This makes the framework reusable across dozens of clients without forking the codebase.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">Selenium WebDriver</span>
+                <span class="tag">pytest</span>
+                <span class="tag">pytest-html</span>
+                <span class="tag">Faker</span>
+                <span class="tag">PyYAML</span>
+                <span class="tag">webdriver-manager</span>
+                <span class="tag">conftest.py</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- PROJECT 5 — SOCIAL MEDIA SCRAPER & ANALYZER -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj5">
+    <div class="section-header">
+        <div class="section-num">PROJECT 05 / SELENIUM · NLTK · BEAUTIFULSOUP</div>
+        <h2 class="section-title">Social Media Content Scraper &amp; Analyzer</h2>
+        <p class="section-tagline">A social media intelligence tool that uses Selenium to scroll and load dynamic post feeds, BeautifulSoup to parse them, and NLTK / TextBlob to score sentiment — with word cloud and bar chart visualisations, date-range tracking, and a scheduled daily email digest.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">Selenium Scrolling</span>
+            <span class="badge badge-cyan">BeautifulSoup4</span>
+            <span class="badge badge-green">NLTK / TextBlob</span>
+            <span class="badge badge-green">Word Cloud</span>
+            <span class="badge badge-blue">CSV Export</span>
+            <span class="badge badge-purple">Daily Email</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>Social media feeds are dynamic, JavaScript-rendered, and infinite-scrolling — making traditional HTTP scraping useless. This tool uses <strong>Selenium</strong> to open a browser, scroll down the page repeatedly to trigger lazy-load events, and wait for new posts to render before extracting. <strong>BeautifulSoup</strong> then parses the fully-loaded HTML to extract post text, author, timestamp, and engagement metrics. Each post or comment is passed through <strong>NLTK's VADER sentiment analyzer</strong> (or TextBlob's polarity scorer) to produce a positive / neutral / negative classification and score. Results are visualised as a <strong>word cloud</strong> of top keywords and a <strong>bar chart</strong> of sentiment distribution. The full dataset is exported to <strong>CSV</strong> for further analysis. A scheduled daily scrape emails a summary report automatically.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+                <div class="m-value">Infinite</div>
+                <div class="m-label">Scroll Scraping</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+                <div class="m-value">VADER</div>
+                <div class="m-label">Sentiment</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10-1.38 0-2.7-.28-3.9-.78"/><path d="M2 12a10 10 0 0 1 6.5-9.4"/><path d="M8.5 8.5l7 7"/><path d="M15.5 8.5l-7 7"/></svg></div>
+                <div class="m-value">Word</div>
+                <div class="m-label">Cloud Chart</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="m-value">Daily</div>
+                <div class="m-label">Email Report</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Analysis Pipeline</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Selenium Dynamic Scraping</div>
+                        <div class="flow-desc">A Selenium session navigates to the target social media page, logs in if required, and executes repeated JavaScript scroll-to-bottom commands with configurable pause intervals to allow new posts to load. A post count check stops scrolling when no new content appears.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">BeautifulSoup Parsing</div>
+                        <div class="flow-desc">The page's rendered HTML source is passed to BeautifulSoup, which extracts post text, author name, post timestamp, and like/comment counts from each post element using CSS selectors or class patterns specific to the target platform.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Sentiment Scoring (NLTK / TextBlob)</div>
+                        <div class="flow-desc">NLTK's VADER (Valence Aware Dictionary and sEntiment Reasoner) assigns compound, positive, neutral, and negative scores to each post. TextBlob is used as a secondary scorer for polarity and subjectivity. Posts are classified into three buckets: positive, neutral, or negative.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Visualisation &amp; Export</div>
+                        <div class="flow-desc">wordcloud generates a visual keyword map from all post text (stopwords removed). matplotlib produces a bar chart of sentiment distribution. All data is exported to a CSV file with columns: post_text, author, date, sentiment_score, sentiment_label.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Scheduled Daily Digest</div>
+                        <div class="flow-desc">APScheduler triggers the full scrape-analyze-report pipeline daily at a configured time. A summary email is generated with total posts scraped, sentiment breakdown percentages, top 10 keywords, and links to the full CSV and charts.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">Selenium</span>
+                <span class="tag">BeautifulSoup4</span>
+                <span class="tag">NLTK (VADER)</span>
+                <span class="tag">TextBlob</span>
+                <span class="tag">wordcloud</span>
+                <span class="tag">matplotlib</span>
+                <span class="tag">APScheduler</span>
+                <span class="tag">smtplib</span>
+                <span class="tag">csv</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- PROJECT 6 — LINKEDIN CRM BOT -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj6">
+    <div class="section-header">
+        <div class="section-num">PROJECT 06 / SELENIUM · SQLITE · CSV</div>
+        <h2 class="section-title">LinkedIn Auto-Outreach &amp; CRM Bot</h2>
+        <p class="section-tagline">A LinkedIn outreach automation bot that reads target profiles from CSV, personalises connection requests using a name + template system, tracks all outreach in a local SQLite CRM, rate-limits to ~20 actions/day, and emails a daily summary report.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">Selenium</span>
+            <span class="badge badge-cyan">Human-Like Delays</span>
+            <span class="badge badge-green">SQLite CRM</span>
+            <span class="badge badge-red">Rate Limiting</span>
+            <span class="badge badge-blue">Session Cookies</span>
+            <span class="badge badge-purple">Daily Summary Email</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>LinkedIn's connection outreach is high-value but time-consuming when done manually at scale. This bot automates it safely. <strong>Selenium</strong> navigates LinkedIn's interface with <strong>randomised human-like delays</strong> (drawn from a normal distribution) between every action to mimic natural behaviour and avoid detection. Target profiles are read from a <strong>CSV file</strong> (name, company, role, profile URL), and each connection message is personalised using a <strong>name + message template</strong> system. A local <strong>SQLite CRM</strong> tracks the full lifecycle of each outreach: sent, accepted, or replied. The bot hard-caps at <strong>~20 actions per day</strong> to stay within LinkedIn's unofficial limits. Browser sessions are saved as cookies, enabling pause-and-resume across days without logging in again. A <strong>daily summary email</strong> reports total sent, new accepts, and new replies.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div class="m-value">~20/day</div>
+                <div class="m-label">Action Limit</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="m-value">CSV</div>
+                <div class="m-label">Target List</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+                <div class="m-value">SQLite</div>
+                <div class="m-label">CRM Tracking</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                <div class="m-value">Cookies</div>
+                <div class="m-label">Session Resume</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Outreach Workflow</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Load Session &amp; Log In</div>
+                        <div class="flow-desc">On first run, Selenium logs in with credentials and saves session cookies to a local file. On subsequent runs, cookies are loaded directly — no login required unless the session expires.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Read Target CSV &amp; Filter</div>
+                        <div class="flow-desc">The bot reads the target CSV and cross-references against the SQLite CRM to skip any profiles already contacted. Only fresh targets with status "pending" in the CRM are processed.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Navigate &amp; Personalise Message</div>
+                        <div class="flow-desc">For each target, the bot navigates to their LinkedIn profile URL, clicks "Connect", selects "Add a note", and fills in a personalised message by substituting {first_name}, {company}, and {role} placeholders from the template.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Rate Limit &amp; Human-Like Delays</div>
+                        <div class="flow-desc">After each send, a random delay between 30–90 seconds is applied. A daily counter is checked before each action; once ~20 actions are reached, the bot saves progress to the CRM and exits, resuming the next day.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">CRM Update &amp; Daily Email</div>
+                        <div class="flow-desc">Each sent request is logged in SQLite with status "sent" and timestamp. The bot also checks recent notifications for accepted connections and replies, updating CRM status accordingly. A formatted summary email is sent at the end of each session.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box purple">
+            <div class="hb-label">Safety &amp; Anti-Detection Measures</div>
+            <p>All delays are drawn from a random normal distribution rather than fixed intervals, making timing patterns indistinguishable from human behaviour. The ~20 actions/day cap aligns with LinkedIn's known informal limits. Browser session cookies prevent repeated login events that can trigger security checks.</p>
+        </div>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>CRM Status Tracked</h4>
+                <ul>
+                    <li>Pending — not yet contacted</li>
+                    <li>Sent — connection request sent</li>
+                    <li>Accepted — connection accepted</li>
+                    <li>Replied — received a reply</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Daily Summary Email</h4>
+                <ul>
+                    <li>Total requests sent today</li>
+                    <li>New connections accepted</li>
+                    <li>New replies received</li>
+                    <li>Remaining targets in queue</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">Selenium WebDriver</span>
+                <span class="tag">SQLite3</span>
+                <span class="tag">csv</span>
+                <span class="tag">pickle (cookies)</span>
+                <span class="tag">random / time</span>
+                <span class="tag">smtplib</span>
+                <span class="tag">Jinja2 (email template)</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- PROJECT 7 — AI NEWSPAPER AGGREGATOR -->
+<!-- ========================================================== -->
+<div class="sep"></div>
+<div id="proj7">
+    <div class="section-header">
+        <div class="section-num">PROJECT 07 / SCRAPY · HUGGINGFACE · FASTAPI</div>
+        <h2 class="section-title">Newspaper Aggregator with AI Summarizer</h2>
+        <p class="section-tagline">A full-stack news aggregation pipeline that crawls Dawn, Geo, BBC, and Al Jazeera with Scrapy, extracts article content with Newspaper3k, generates concise AI summaries using a HuggingFace transformer, and exposes everything via a FastAPI backend with category filters and a daily digest email.</p>
+        <div class="section-badges">
+            <span class="badge badge-gold">Scrapy</span>
+            <span class="badge badge-cyan">Newspaper3k</span>
+            <span class="badge badge-green">HuggingFace</span>
+            <span class="badge badge-green">FastAPI</span>
+            <span class="badge badge-blue">RSS Feed</span>
+            <span class="badge badge-purple">Daily Digest Email</span>
+        </div>
+    </div>
+
+    <div class="bot-body">
+        <div class="overview-card">
+            <p>This is the most technically sophisticated project in the collection. <strong>Scrapy</strong> crawls four major news sources (Dawn, Geo, BBC, Al Jazeera) for fresh articles every few hours. <strong>Newspaper3k</strong> extracts the full article body, author byline, and publish date from each URL with minimal boilerplate parsing. Each article body is then passed through a <strong>HuggingFace transformer model</strong> (e.g., facebook/bart-large-cnn or t5-small) to generate a concise, readable summary — turning long articles into 2–3 sentence digests. A <strong>FastAPI</strong> backend exposes two clean REST endpoints: <code>/headlines</code> (latest articles with metadata) and <code>/summary/{article_id}</code> (the AI-generated summary). A frontend dashboard renders articles with <strong>category filters</strong> (politics, tech, sports, business). An <strong>RSS feed</strong> is auto-generated for self-hosting. Finally, a <strong>daily digest email</strong> delivers the top 5 AI-summarised stories directly to your inbox.</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></div>
+                <div class="m-value">4 Sources</div>
+                <div class="m-label">News Sites</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V6a3 3 0 0 1 6 0v5"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg></div>
+                <div class="m-value">BART</div>
+                <div class="m-label">AI Model</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <div class="m-value">FastAPI</div>
+                <div class="m-label">REST Backend</div>
+            </div>
+            <div class="metric-card">
+                <div class="m-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1" fill="currentColor"/></svg></div>
+                <div class="m-value">RSS</div>
+                <div class="m-label">Self-Hosted Feed</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>System Architecture</h3>
+            <div class="strategy-flow">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Scrapy Crawlers — Multi-Source</div>
+                        <div class="flow-desc">Separate Scrapy spiders are written for Dawn, Geo, BBC, and Al Jazeera. Each spider follows pagination and article links, yielding (url, title, category) tuples. A scheduler runs all spiders every few hours. Duplicate URLs are filtered via a seen-URLs set.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Newspaper3k Extraction</div>
+                        <div class="flow-desc">For each new article URL, Newspaper3k downloads the page, parses out the full article body text, author name, and publish date using its built-in NLP pipeline — far more reliably than manual CSS selectors across different site layouts.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-content">
+                        <div class="flow-title">HuggingFace AI Summarization</div>
+                        <div class="flow-desc">The article body is passed to a loaded HuggingFace summarization pipeline (facebook/bart-large-cnn or t5-small for lighter inference). The model generates a 2–3 sentence abstractive summary. Summaries are stored alongside the article in the database.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-content">
+                        <div class="flow-title">FastAPI REST Endpoints</div>
+                        <div class="flow-desc"><code>GET /headlines?category=tech&amp;limit=20</code> returns latest articles with title, source, publish date, and URL. <code>GET /summary/{article_id}</code> returns the stored AI-generated summary. Both endpoints support query parameters for filtering and pagination.</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-content">
+                        <div class="flow-title">RSS Feed &amp; Daily Digest</div>
+                        <div class="flow-desc">A <code>GET /rss</code> endpoint generates a valid RSS 2.0 XML feed of the latest articles with summaries — compatible with any RSS reader for self-hosting. Each morning, a digest job selects the top 5 most-shared or newest articles, formats them into a styled HTML email with summaries, and sends via SMTP.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box green">
+            <div class="hb-label">AI Summarization Model</div>
+            <p>The default model is <strong>facebook/bart-large-cnn</strong>, a BART model fine-tuned on the CNN/DailyMail dataset — purpose-built for news article summarisation. For resource-constrained deployments, <strong>t5-small</strong> is an alternative that runs efficiently on CPU with slightly shorter summaries. Both are loaded via HuggingFace's <code>pipeline("summarization")</code> API with configurable max/min length parameters.</p>
+        </div>
+
+        <div class="content-section">
+            <h3>API Endpoints</h3>
+            <div class="table-wrapper">
+                <table class="config-table">
+                    <thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td class="key-col">/headlines</td><td class="type-col">GET</td><td>Returns latest articles. Supports <code>?category=</code> and <code>?limit=</code> params.</td></tr>
+                        <tr><td class="key-col">/summary/{id}</td><td class="type-col">GET</td><td>Returns the AI-generated summary for a specific article ID.</td></tr>
+                        <tr><td class="key-col">/rss</td><td class="type-col">GET</td><td>Returns a valid RSS 2.0 XML feed of latest articles with summaries.</td></tr>
+                        <tr><td class="key-col">/sources</td><td class="type-col">GET</td><td>Lists all active news sources and their last crawl timestamps.</td></tr>
+                        <tr><td class="key-col">/categories</td><td class="type-col">GET</td><td>Returns available article categories (politics, tech, sports, business).</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>News Sources</h4>
+                <ul>
+                    <li>Dawn — Pakistan's leading English daily</li>
+                    <li>Geo News — Urdu / English multimedia</li>
+                    <li>BBC News — Global coverage</li>
+                    <li>Al Jazeera — Middle East &amp; world news</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Categories Tracked</h4>
+                <ul>
+                    <li>Politics &amp; Government</li>
+                    <li>Technology &amp; Science</li>
+                    <li>Sports &amp; Recreation</li>
+                    <li>Business &amp; Finance</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3>Key Libraries &amp; Technologies</h3>
+            <div class="tags-row">
+                <span class="tag">Scrapy</span>
+                <span class="tag">Newspaper3k</span>
+                <span class="tag">HuggingFace Transformers</span>
+                <span class="tag">BART / T5</span>
+                <span class="tag">FastAPI</span>
+                <span class="tag">Uvicorn</span>
+                <span class="tag">SQLite / SQLAlchemy</span>
+                <span class="tag">feedgen (RSS)</span>
+                <span class="tag">smtplib</span>
+                <span class="tag">Jinja2</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===== CLOSING SECTION ===== -->
+<div class="sep"></div>
+<div class="final-section">
+    <h2 style="position:relative; z-index:2;">Always <span class="gradient-text">Automating More</span></h2>
+    <p style="position:relative; z-index:2;">This portfolio of Python automation projects covers scraping, OCR, monitoring, testing, NLP, CRM, and AI — with each project solving a real-world problem. The same engineering discipline applied here drives everything else in the portfolio.</p>
+
+    <div style="position:relative; z-index:2; border: 1px solid rgba(245,166,35,0.2); border-radius: 16px; padding: 32px 40px; max-width: 700px; margin: 0 auto; background: rgba(5,9,26,0.6); backdrop-filter: blur(8px);">
+        <div style="font-size: 13px; color: var(--grey); line-height: 1.8;">
+            <strong style="color: var(--white); font-size: 16px; display: block; margin-bottom: 10px;">Built for Real Problems</strong>
+            Every project here was designed to eliminate a repetitive, manual task — whether it's checking prices, reading invoices, scraping jobs, or doing LinkedIn outreach. Python's automation ecosystem (Scrapy, Selenium, HuggingFace, FastAPI) makes it possible to build production-grade tools in days.
+        </div>
+    </div>
+
+    <div style="position:relative; z-index:2; margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border); color: var(--grey); font-size: 12px; letter-spacing: 0.08em;">
+        Automation Scripts &amp; Bots Documentation &nbsp;·&nbsp; Python &nbsp;·&nbsp; 2026
+    </div>
+</div>
+
+
 </body>
 </html>
